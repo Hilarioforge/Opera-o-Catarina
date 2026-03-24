@@ -274,6 +274,46 @@ onSnapshot(query(collection(db,'growth'),orderBy('ts','desc')),snap=>{
   el.innerHTML=`<table class="growth-table"><tr><th>Data</th><th>Peso</th><th>Altura</th><th>PC</th></tr>${snap.docs.map(d=>{const x=d.data();return`<tr><td>${x.d?new Date(x.d+'T12:00').toLocaleDateString('pt-BR'):'-'}</td><td>${x.p?x.p+'kg':'-'}</td><td>${x.a?x.a+'cm':'-'}</td><td>${x.pc?x.pc+'cm':'-'}</td></tr>`;}).join('')}</table>`;
 });
 
+  // CONSULTAS
+window.saveConsult = async function(){
+  const date = document.getElementById('c-date').value;
+  const time = document.getElementById('c-time').value;
+  const local = document.getElementById('c-local').value.trim();
+  const doctor = document.getElementById('c-doctor').value.trim();
+
+  if(!date || !time || !local || !doctor){
+    alert('Preencha todos os campos!');
+    return;
+  }
+
+  const btn = document.getElementById('btn-consult');
+  btn.disabled = true;
+  btn.textContent = 'Salvando...';
+
+  try{
+    await addDoc(collection(db,'consults'),{
+      date,
+      time,
+      local,
+      doctor,
+      created: new Date().toLocaleString('pt-BR'),
+      ts: serverTimestamp()
+    });
+
+    // limpar campos
+    document.getElementById('c-date').value = '';
+    document.getElementById('c-time').value = '';
+    document.getElementById('c-local').value = '';
+    document.getElementById('c-doctor').value = '';
+
+  }catch(e){
+    alert('Erro ao salvar consulta.');
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Salvar consulta';
+};
+
 // OBSERVAÇÕES
 window.saveNote = async function(){
   const t=document.getElementById('note-input').value.trim();
@@ -306,6 +346,38 @@ onSnapshot(query(collection(db,'vacc'),orderBy('ts','desc')),snap=>{
   const el=document.getElementById('vacc-list');
   if(snap.empty){el.innerHTML='<div class="empty">Nenhum registro ainda.</div>';return;}
   el.innerHTML=snap.docs.map(d=>`<div class="note-item"><div class="note-date">${d.data().d}</div><div class="note-text">${d.data().t.replace(/\n/g,'<br>')}</div><button class="note-del" onclick="delVacc('${d.id}')">✕</button></div>`).join('');
+});
+  
+// =====================
+// 🩺 CONSULTAS
+// =====================
+
+window.delConsult = async function(id){
+  if(!confirm('Apagar consulta?')) return;
+  await deleteDoc(doc(db,'consults',id));
+};
+
+onSnapshot(query(collection(db,'consults'),orderBy('ts','desc')),snap=>{
+  const el = document.getElementById('consult-list');
+
+  if(snap.empty){
+    el.innerHTML = '<div class="empty">Nenhuma consulta registrada.</div>';
+    return;
+  }
+
+  el.innerHTML = snap.docs.map(d=>{
+    const c = d.data();
+    return `
+      <div class="note-item">
+        <div class="note-date">${c.date} às ${c.time}</div>
+        <div class="note-text">
+          📍 ${c.local}<br>
+          🩺 ${c.doctor}
+        </div>
+        <button class="note-del" onclick="delConsult('${d.id}')">✕</button>
+      </div>
+    `;
+  }).join('');
 });
 
 // ACCORDION
