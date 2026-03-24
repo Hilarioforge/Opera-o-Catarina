@@ -49,7 +49,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .note-textarea{width:100%;padding:12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);font-size:13px;color:var(--text);font-family:inherit;resize:none;min-height:80px;outline:none;margin-bottom:8px;}
 .note-textarea:focus{border-color:var(--pink-mid);}
 .note-item{background:var(--surface2);border-radius:10px;padding:12px;margin-bottom:8px;position:relative;}
-.note-date{font-size:10px;color:var(--muted);margin-bottom:4px;}
+.note-date{
+  font-size:14px;
+  font-weight:600;
+  margin-bottom:4px;
+}
+
+.note-date strong{
+  font-size:18px;
+  color:#ec4899;
+}
 .note-text{font-size:13px;line-height:1.6;padding-right:24px;}
 .note-del{position:absolute;top:10px;right:10px;background:none;border:none;font-size:14px;color:var(--muted);cursor:pointer;padding:2px 6px;}
 .doc-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px;}
