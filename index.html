@@ -366,18 +366,26 @@ onSnapshot(query(collection(db,'consults'),orderBy('ts','desc')),snap=>{
   }
 
   el.innerHTML = snap.docs.map(d=>{
-    const c = d.data();
-    return `
-      <div class="note-item">
-        <div class="note-date">${c.date} às ${c.time}</div>
-        <div class="note-text">
-          📍 ${c.local}<br>
-          🩺 ${c.doctor}
-        </div>
-        <button class="note-del" onclick="delConsult('${d.id}')">✕</button>
+  const c = d.data();
+
+  const data = new Date(c.date+'T12:00').toLocaleDateString('pt-BR');
+  const hora = c.time;
+
+  return `
+    <div class="note-item">
+      <div class="note-date">
+        <strong>${data}</strong> às <strong>${hora}</strong>
       </div>
-    `;
-  }).join('');
+
+      <div class="note-text">
+        📍 ${c.local}<br>
+        🩺 ${c.doctor}
+      </div>
+
+      <button class="note-del" onclick="delConsult('${d.id}')">✕</button>
+    </div>
+  `;
+}).join('');
 });
 
 // ACCORDION
