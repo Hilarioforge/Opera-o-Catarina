@@ -37,14 +37,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .form-row{display:flex;gap:10px;margin-bottom:10px;}
 .form-group{flex:1;}
 .form-group label{font-size:11px;color:var(--muted);display:block;margin-bottom:4px;}
-.form-group input{width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);font-size:14px;color:var(--text);font-family:inherit;outline:none;}
-.form-group input:focus{border-color:var(--pink-mid);}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);font-size:14px;color:var(--text);font-family:inherit;outline:none;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--pink-mid);}
+.form-group select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23b07090' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
 .btn-pink{width:100%;padding:12px;background:linear-gradient(135deg,#ec4899,#f472b6);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 4px 12px rgba(236,72,153,.25);}
 .btn-pink:active{opacity:.85;}
 .btn-pink:disabled{opacity:.6;cursor:not-allowed;}
 .growth-table{width:100%;border-collapse:collapse;margin-top:8px;}
 .growth-table th{font-size:10px;color:var(--muted);text-align:left;padding:4px 6px;text-transform:uppercase;letter-spacing:.05em;}
 .growth-table td{font-size:13px;padding:8px 6px;border-top:1px solid var(--border);}
+.del-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:2px 6px;border-radius:6px;}
+.del-btn:hover{background:#fee2e2;color:#ef4444;}
 .empty{text-align:center;font-size:13px;color:var(--muted);padding:16px 0;}
 .note-textarea{width:100%;padding:12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);font-size:13px;color:var(--text);font-family:inherit;resize:none;min-height:80px;outline:none;margin-bottom:8px;}
 .note-textarea:focus{border-color:var(--pink-mid);}
@@ -73,6 +76,61 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .eok{color:var(--green);font-weight:600;}
 .loading{text-align:center;padding:12px;color:var(--muted);font-size:13px;}
 .footer{text-align:center;font-size:11px;color:var(--muted);margin-top:20px;padding:0 20px 10px;line-height:1.6;}
+
+/* CONSULTAS LIST */
+.consult-item{background:var(--surface2);border-radius:12px;padding:12px 14px;margin-bottom:8px;position:relative;}
+.consult-item-header{display:flex;justify-content:space-between;align-items:flex-start;}
+.consult-date-time{font-size:12px;font-weight:600;color:var(--pink);}
+.consult-doctor{font-size:13px;font-weight:600;color:var(--text);margin-top:3px;}
+.consult-local{font-size:11px;color:var(--muted);margin-top:2px;}
+
+/* VACINAS - Calendário SBP */
+.vacc-section-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin:14px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border);}
+.vacc-card{background:var(--surface2);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px;}
+.vacc-status-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+.vacc-status-dot.done{background:#10b981;}
+.vacc-status-dot.pending{background:#e5e7eb;border:2px solid #d1d5db;}
+.vacc-status-dot.late{background:#f59e0b;}
+.vacc-info{flex:1;}
+.vacc-name{font-size:13px;font-weight:600;color:var(--text);}
+.vacc-desc{font-size:11px;color:var(--muted);margin-top:2px;}
+.vacc-applied{font-size:11px;color:var(--green);margin-top:4px;font-weight:600;}
+.vacc-btn-apply{font-size:11px;padding:4px 10px;background:linear-gradient(135deg,#ec4899,#f472b6);color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:600;margin-top:4px;}
+
+/* MODAL VACINA */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(59,26,46,.45);z-index:1000;align-items:flex-end;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 40px;width:100%;max-width:480px;animation:slideUp .25s ease;}
+@keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-title{font-size:15px;font-weight:700;color:var(--pink);margin-bottom:16px;}
+.modal-close{float:right;background:none;border:none;font-size:20px;color:var(--muted);cursor:pointer;margin-top:-4px;}
+
+/* CERTIDÃO DIGITAL */
+.certidao-view-btn{margin-left:auto;font-size:11px;padding:5px 12px;background:linear-gradient(135deg,#1a3a6e,#2d5a9e);color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:600;white-space:nowrap;}
+
+/* VISUALIZADOR FOTO */
+.photo-viewer{display:none;position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:2000;align-items:center;justify-content:center;flex-direction:column;padding:16px;}
+.photo-viewer.open{display:flex;}
+.photo-viewer img{max-width:100%;max-height:82vh;border-radius:8px;object-fit:contain;}
+.photo-viewer-name{color:rgba(255,255,255,.6);font-size:12px;margin-top:10px;}
+.photo-viewer-close{color:#fff;font-size:14px;font-weight:600;margin-top:14px;padding:9px 22px;background:rgba(255,255,255,.15);border:none;border-radius:20px;cursor:pointer;font-family:inherit;}
+
+/* LINHA DO TEMPO */
+.timeline-wrap{position:relative;padding-left:28px;}
+.timeline-wrap::before{content:'';position:absolute;left:10px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--pink-mid),var(--border));}
+.timeline-item{position:relative;margin-bottom:16px;}
+.timeline-dot{position:absolute;left:-22px;top:4px;width:14px;height:14px;border-radius:50%;background:var(--pink);border:2px solid #fff;box-shadow:0 0 0 2px var(--pink-mid);}
+.timeline-dot.auto{background:linear-gradient(135deg,#ec4899,#f472b6);}
+.timeline-dot.manual{background:#fff;border:2px solid var(--pink);}
+.timeline-dot.future{background:#e5e7eb;border:2px solid #d1d5db;box-shadow:none;}
+.timeline-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;}
+.timeline-card.future{opacity:.5;}
+.timeline-date{font-size:10px;color:var(--muted);margin-bottom:3px;}
+.timeline-title{font-size:13px;font-weight:700;color:var(--text);}
+.timeline-desc{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5;}
+.timeline-photo{width:100%;border-radius:8px;margin-top:8px;max-height:180px;object-fit:cover;}
+.timeline-photo-btn{font-size:11px;padding:5px 12px;background:var(--surface2);color:var(--pink);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-family:inherit;font-weight:600;margin-top:6px;}
+.timeline-del{float:right;background:none;border:none;font-size:13px;color:var(--muted);cursor:pointer;padding:0 0 4px 8px;}
 </style>
 </head>
 <body>
@@ -89,6 +147,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <span id="sync-txt">Conectando...</span>
 </div>
 
+<!-- DADOS PESSOAIS -->
 <div class="section" style="margin-top:16px">
   <div class="section-title">Dados pessoais</div>
   <div class="info-grid">
@@ -101,6 +160,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   </div>
 </div>
 
+<!-- CRESCIMENTO -->
 <div class="section" style="margin-top:16px">
   <div class="section-title">Crescimento</div>
   <div class="card-full">
@@ -119,52 +179,92 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   </div>
 </div>
 
+<!-- CONSULTAS -->
 <div class="section" style="margin-top:16px">
   <div class="section-title">Consultas</div>
   <div class="card-full">
     <div class="form-title">🩺 Registrar consulta</div>
-    
     <div class="form-row">
-      <div class="form-group">
-        <label>Data</label>
-        <input type="date" id="c-date">
-      </div>
-      <div class="form-group">
-        <label>Horário</label>
-        <input type="time" id="c-time">
-      </div>
+      <div class="form-group"><label>Data</label><input type="date" id="c-date"></div>
+      <div class="form-group"><label>Horário</label><input type="time" id="c-time"></div>
     </div>
- 
     <div class="form-row">
-      <div class="form-group">
-        <label>Local</label>
-        <input type="text" id="c-local" placeholder="Ex: Hospital, clínica...">
-      </div>
-      <div class="form-group">
-        <label>Dr(a).</label>
-        <input type="text" id="c-doctor" placeholder="Nome do médico">
-      </div>
+      <div class="form-group"><label>Local</label><input type="text" id="c-local" placeholder="Ex: Hospital, clínica..."></div>
+      <div class="form-group"><label>Dr(a).</label><input type="text" id="c-doctor" placeholder="Nome do médico"></div>
     </div>
- 
     <button class="btn-pink" id="btn-consult" onclick="saveConsult()">Salvar consulta</button>
- 
-    <div style="font-size:13px;font-weight:600;color:var(--pink);margin:14px 0 6px">
-      📋 Histórico
-    </div>
- 
-    <div id="consult-list">
-      <div class="loading">Carregando...</div>
-    </div>
+    <div style="font-size:13px;font-weight:600;color:var(--pink);margin:14px 0 6px">📋 Histórico</div>
+    <div id="consult-list"><div class="loading">Carregando...</div></div>
   </div>
 </div>
 
-<div class="section" style="margin-top:4px">
+<!-- VACINAS -->
+<div class="section" style="margin-top:16px">
+  <div class="section-title">Vacinas</div>
+  <div class="card-full">
+    <div class="form-title">💉 Calendário Vacinal SBP</div>
+    <div id="vacc-calendar"><div class="loading">Carregando...</div></div>
+  </div>
+</div>
+
+<!-- MODAL REGISTRAR VACINA -->
+<div class="modal-overlay" id="vacc-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeVaccModal()">✕</button>
+    <div class="modal-title" id="modal-vacc-name">Registrar Vacina</div>
+    <input type="hidden" id="modal-vacc-key">
+    <div class="form-group" style="margin-bottom:10px"><label>Data de aplicação</label><input type="date" id="modal-vacc-date"></div>
+    <div class="form-group" style="margin-bottom:10px"><label>Local / Clínica</label><input type="text" id="modal-vacc-local" placeholder="Ex: UBS, Hospital da Luz..."></div>
+    <div class="form-group" style="margin-bottom:10px"><label>Lote (opcional)</label><input type="text" id="modal-vacc-lote" placeholder="Ex: A1234B"></div>
+    <div class="form-group" style="margin-bottom:16px"><label>Observações (opcional)</label><textarea id="modal-vacc-obs" style="resize:none;min-height:60px;" placeholder="Reações, observações..."></textarea></div>
+    <button class="btn-pink" onclick="confirmVacc()">✅ Confirmar aplicação</button>
+  </div>
+</div>
+
+<!-- DOCUMENTOS -->
+<div class="section" style="margin-top:16px">
   <div class="section-title">Documentos</div>
-  <div class="doc-item"><span class="doc-icon">📜</span><div><div class="doc-name">Certidão de Nascimento</div><div class="doc-sub">Matrícula: 122044 01 55 2026 1 00775 205 0399574 93</div><div class="doc-sub">9º Subdistrito Vila Mariana — São Paulo/SP · 11/03/2026</div></div></div>
+
+  <div class="doc-item"><span class="doc-icon">📜</span><div style="flex:1"><div class="doc-name">Certidão de Nascimento</div><div class="doc-sub">Matrícula 122044 01 55 2026 1 00775 205 0399574 93</div><div class="doc-sub">9º Subdistrito Vila Mariana · 11/03/2026 · Selo: d4r4-zw8s</div></div><button class="certidao-view-btn" onclick="openCertidao()">📄 Ver</button></div>
   <div class="doc-item"><span class="doc-icon">🪪</span><div><div class="doc-name">CPF</div><div class="doc-sub">163.461.148-91</div></div></div>
   <div class="doc-item"><span class="doc-icon">🏥</span><div><div class="doc-name">Hospital da Luz</div><div class="doc-sub">Av. Azevedo Macedo, 113 — Vila Mariana, São Paulo/SP</div></div></div>
 </div>
 
+<!-- VISUALIZADOR DE FOTO -->
+<div class="photo-viewer" id="photo-viewer">
+  <img id="photo-viewer-img" src="" alt="">
+  <div class="photo-viewer-name" id="photo-viewer-name"></div>
+  <button class="photo-viewer-close" onclick="closePhotoViewer()">✕ Fechar</button>
+</div>
+
+<!-- LINHA DO TEMPO -->
+<div class="section" style="margin-top:16px">
+  <div class="section-title">Linha do Tempo 💕</div>
+  <div class="card-full">
+    <div class="form-title">✨ Registrar memória</div>
+    <div class="form-row">
+      <div class="form-group"><label>Data</label><input type="date" id="mem-date"></div>
+      <div class="form-group"><label>Título</label><input type="text" id="mem-title" placeholder="Ex: Primeiro sorriso"></div>
+    </div>
+    <div class="form-group" style="margin-bottom:10px"><label>Descrição</label><textarea id="mem-desc" style="resize:none;min-height:60px;" placeholder="Conte o que aconteceu..."></textarea></div>
+    <button class="btn-pink" id="btn-mem" onclick="saveMem()">💾 Salvar memória</button>
+    <div style="font-size:13px;font-weight:600;color:var(--pink);margin:18px 0 12px">🌸 Momentos da Catarina</div>
+    <div id="timeline-list"><div class="loading">Carregando...</div></div>
+  </div>
+</div>
+
+<!-- OBSERVAÇÕES -->
+<div class="section" style="margin-top:16px">
+  <div class="section-title">Observações</div>
+  <div class="card-full">
+    <div class="form-title">📝 Nova observação</div>
+    <textarea class="note-textarea" id="note-input" placeholder="Anotações, sintomas, comportamentos..."></textarea>
+    <button class="btn-pink" id="btn-note" onclick="saveNote()">Salvar observação</button>
+    <div id="notes-list" style="margin-top:12px"></div>
+  </div>
+</div>
+
+<!-- EXAMES DA GRAVIDEZ -->
 <div class="section" style="margin-top:16px">
   <div class="section-title">Exames da gravidez</div>
   <div class="exam-cat">
@@ -197,7 +297,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCrVxYju5nYLYyXaczK76znjqVQmnWwMnM",
@@ -210,11 +311,12 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
 document.getElementById('sync-dot').className = 'sync-dot';
 document.getElementById('sync-txt').textContent = 'Conectado — dados compartilhados em tempo real 🌸';
 
-// CONTADOR
+// ── CONTADOR DE IDADE ──────────────────────────────────────────────
 function updateAge() {
   const born = new Date('2026-03-10T18:26:00');
   const now = new Date();
@@ -231,7 +333,7 @@ function updateAge() {
 }
 updateAge(); setInterval(updateAge,60000);
 
-// CRESCIMENTO
+// ── CRESCIMENTO ────────────────────────────────────────────────────
 window.saveGrowth = async function(){
   const d=document.getElementById('g-date').value;
   const p=document.getElementById('g-peso').value;
@@ -250,90 +352,347 @@ window.saveGrowth = async function(){
   btn.disabled=false;btn.textContent='Salvar medida';
 };
 
+window.deleteGrowth = async function(id){
+  if(!confirm('Excluir esta medida?'))return;
+  try{await deleteDoc(doc(db,'growth',id));}
+  catch(e){alert('Erro ao excluir.');}
+};
+
 onSnapshot(query(collection(db,'growth'),orderBy('ts','desc')),snap=>{
   const el=document.getElementById('growth-list');
   if(snap.empty){el.innerHTML='<div class="empty">Nenhuma medida registrada ainda.</div>';return;}
-  el.innerHTML=`<table class="growth-table"><tr><th>Data</th><th>Peso</th><th>Altura</th><th>PC</th></tr>${snap.docs.map(d=>{const x=d.data();return`<tr><td>${x.d?new Date(x.d+'T12:00').toLocaleDateString('pt-BR'):'-'}</td><td>${x.p?x.p+'kg':'-'}</td><td>${x.a?x.a+'cm':'-'}</td><td>${x.pc?x.pc+'cm':'-'}</td></tr>`;}).join('')}</table>`;
+  el.innerHTML=`<table class="growth-table">
+    <tr><th>Data</th><th>Peso</th><th>Altura</th><th>PC</th><th></th></tr>
+    ${snap.docs.map(d=>{
+      const x=d.data();
+      return`<tr>
+        <td>${x.d?new Date(x.d+'T12:00').toLocaleDateString('pt-BR'):'-'}</td>
+        <td>${x.p?x.p+'kg':'-'}</td>
+        <td>${x.a?x.a+'cm':'-'}</td>
+        <td>${x.pc?x.pc+'cm':'-'}</td>
+        <td><button class="del-btn" onclick="deleteGrowth('${d.id}')">🗑</button></td>
+      </tr>`;
+    }).join('')}
+  </table>`;
 });
 
-// CONSULTAS
+// ── CONSULTAS ──────────────────────────────────────────────────────
 window.saveConsult = async function(){
   const date = document.getElementById('c-date').value;
   const time = document.getElementById('c-time').value;
   const local = document.getElementById('c-local').value.trim();
   const doctor = document.getElementById('c-doctor').value.trim();
- 
-  if(!date || !time || !local || !doctor){
-    alert('Preencha todos os campos!');
-    return;
-  }
- 
+  if(!date || !time || !local || !doctor){alert('Preencha todos os campos!');return;}
   const btn = document.getElementById('btn-consult');
-  btn.disabled = true;
-  btn.textContent = 'Salvando...';
- 
+  btn.disabled=true;btn.textContent='Salvando...';
   try{
-    await addDoc(collection(db,'consults'),{
-      date,
-      time,
-      local,
-      doctor,
-      created: new Date().toLocaleString('pt-BR'),
-      ts: serverTimestamp()
-    });
- 
-    // limpar campos
-    document.getElementById('c-date').value = '';
-    document.getElementById('c-time').value = '';
-    document.getElementById('c-local').value = '';
-    document.getElementById('c-doctor').value = '';
- 
-  }catch(e){
-    alert('Erro ao salvar consulta.');
-  }
- 
-  btn.disabled = false;
-  btn.textContent = 'Salvar consulta';
+    await addDoc(collection(db,'consults'),{date,time,local,doctor,ts:serverTimestamp()});
+    document.getElementById('c-date').value='';
+    document.getElementById('c-time').value='';
+    document.getElementById('c-local').value='';
+    document.getElementById('c-doctor').value='';
+  }catch(e){alert('Erro ao salvar consulta.');}
+  btn.disabled=false;btn.textContent='Salvar consulta';
 };
 
-// OBSERVAÇÕES
+window.deleteConsult = async function(id){
+  if(!confirm('Excluir esta consulta?'))return;
+  try{await deleteDoc(doc(db,'consults',id));}
+  catch(e){alert('Erro ao excluir.');}
+};
+
+onSnapshot(query(collection(db,'consults'),orderBy('ts','desc')),snap=>{
+  const el=document.getElementById('consult-list');
+  if(snap.empty){el.innerHTML='<div class="empty">Nenhuma consulta registrada ainda.</div>';return;}
+  el.innerHTML=snap.docs.map(d=>{
+    const x=d.data();
+    const dateStr=x.date?new Date(x.date+'T12:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'}):'-';
+    return`<div class="consult-item">
+      <div class="consult-item-header">
+        <div>
+          <div class="consult-date-time">📅 ${dateStr} às ${x.time||'-'}</div>
+          <div class="consult-doctor">👩‍⚕️ ${x.doctor||'-'}</div>
+          <div class="consult-local">📍 ${x.local||'-'}</div>
+        </div>
+        <button class="del-btn" onclick="deleteConsult('${d.id}')">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+});
+
+// ── VACINAS ────────────────────────────────────────────────────────
+const SBP_CALENDAR = [
+  {age:'Ao nascer',vaccines:[
+    {key:'hepb_0',name:'Hepatite B',desc:'1ª dose — ao nascer'},
+    {key:'bcg',name:'BCG',desc:'Dose única — ao nascer'},
+  ]},
+  {age:'2 meses',vaccines:[
+    {key:'penta_1',name:'Pentavalente (DTP+Hib+HepB)',desc:'1ª dose'},
+    {key:'vip_1',name:'VIP (Poliomielite inativada)',desc:'1ª dose'},
+    {key:'pneumo10_1',name:'Pneumocócica 10v',desc:'1ª dose'},
+    {key:'rotav_1',name:'Rotavírus',desc:'1ª dose'},
+  ]},
+  {age:'4 meses',vaccines:[
+    {key:'penta_2',name:'Pentavalente (DTP+Hib+HepB)',desc:'2ª dose'},
+    {key:'vip_2',name:'VIP (Poliomielite inativada)',desc:'2ª dose'},
+    {key:'pneumo10_2',name:'Pneumocócica 10v',desc:'2ª dose'},
+    {key:'rotav_2',name:'Rotavírus',desc:'2ª dose'},
+  ]},
+  {age:'6 meses',vaccines:[
+    {key:'penta_3',name:'Pentavalente (DTP+Hib+HepB)',desc:'3ª dose'},
+    {key:'vip_3',name:'VIP (Poliomielite inativada)',desc:'3ª dose'},
+    {key:'influenza_1',name:'Influenza',desc:'1ª dose (semestral)'},
+  ]},
+  {age:'9 meses',vaccines:[
+    {key:'febre_amarela',name:'Febre Amarela',desc:'1ª dose'},
+    {key:'meningo_c1',name:'Meningocócica C',desc:'1ª dose'},
+  ]},
+  {age:'12 meses',vaccines:[
+    {key:'triplice_viral_1',name:'Tríplice Viral (SCR)',desc:'1ª dose'},
+    {key:'pneumo10_ref',name:'Pneumocócica 10v',desc:'Reforço'},
+    {key:'meningo_c_ref',name:'Meningocócica C',desc:'Reforço'},
+    {key:'varicela',name:'Varicela',desc:'Dose única'},
+  ]},
+  {age:'15 meses',vaccines:[
+    {key:'dtpa_ref1',name:'DTP (Reforço)',desc:'1º reforço'},
+    {key:'vop_ref',name:'VOP (Polio oral)',desc:'Reforço'},
+    {key:'hepatitea',name:'Hepatite A',desc:'Dose única'},
+    {key:'tetravalente',name:'Tetra Viral (SCRV)',desc:'Dose única'},
+  ]},
+];
+
+let vaccData = {};
+
+async function loadVaccCalendar(){
+  const ref2 = doc(db,'vacc_sbp','catarina');
+  const snap = await getDoc(ref2);
+  vaccData = snap.exists() ? (snap.data().vaccines||{}) : {};
+  renderVaccCalendar();
+}
+
+function renderVaccCalendar(){
+  const born = new Date('2026-03-10');
+  const now = new Date();
+  const html = SBP_CALENDAR.map(group=>{
+    const ageMonths = parseInt(group.age) || 0;
+    const dueDate = new Date(born);
+    dueDate.setMonth(dueDate.getMonth()+ageMonths);
+    const isPast = now > dueDate;
+    const vHtml = group.vaccines.map(v=>{
+      const applied = vaccData[v.key];
+      let statusDot,appliedHtml,actionHtml;
+      if(applied){
+        statusDot='done';
+        appliedHtml=`<div class="vacc-applied">✅ Aplicada em ${applied.date}${applied.local?' — '+applied.local:''}</div>`;
+        actionHtml=`<button class="vacc-btn-apply" style="background:none;border:1px solid var(--border);color:var(--muted);" onclick="openVaccModal('${v.key}','${v.name.replace(/'/g,"\\'")}')">✏️ Editar</button>`;
+      } else if(isPast && ageMonths>0){
+        statusDot='late';
+        appliedHtml='<div style="font-size:11px;color:#f59e0b;margin-top:4px;font-weight:600;">⚠️ Pendente — verificar com o pediatra</div>';
+        actionHtml=`<button class="vacc-btn-apply" onclick="openVaccModal('${v.key}','${v.name.replace(/'/g,"\\'")}')">Registrar</button>`;
+      } else {
+        statusDot='pending';
+        appliedHtml='';
+        actionHtml=`<button class="vacc-btn-apply" onclick="openVaccModal('${v.key}','${v.name.replace(/'/g,"\\'")}')">Registrar</button>`;
+      }
+      return`<div class="vacc-card">
+        <div class="vacc-status-dot ${statusDot}"></div>
+        <div class="vacc-info">
+          <div class="vacc-name">${v.name}</div>
+          <div class="vacc-desc">${v.desc}</div>
+          ${appliedHtml}
+          ${actionHtml}
+        </div>
+      </div>`;
+    }).join('');
+    return`<div class="vacc-section-label">💉 ${group.age}</div>${vHtml}`;
+  }).join('');
+  document.getElementById('vacc-calendar').innerHTML=html;
+}
+
+window.openVaccModal = function(key,name){
+  document.getElementById('modal-vacc-key').value=key;
+  document.getElementById('modal-vacc-name').textContent='💉 '+name;
+  const existing=vaccData[key]||{};
+  document.getElementById('modal-vacc-date').value=existing.date||'';
+  document.getElementById('modal-vacc-local').value=existing.local||'';
+  document.getElementById('modal-vacc-lote').value=existing.lote||'';
+  document.getElementById('modal-vacc-obs').value=existing.obs||'';
+  document.getElementById('vacc-modal').classList.add('open');
+};
+
+window.closeVaccModal = function(){
+  document.getElementById('vacc-modal').classList.remove('open');
+};
+
+window.confirmVacc = async function(){
+  const key=document.getElementById('modal-vacc-key').value;
+  const date=document.getElementById('modal-vacc-date').value;
+  const local=document.getElementById('modal-vacc-local').value.trim();
+  const lote=document.getElementById('modal-vacc-lote').value.trim();
+  const obs=document.getElementById('modal-vacc-obs').value.trim();
+  if(!date){alert('Informe a data de aplicação!');return;}
+  vaccData[key]={date,local,lote,obs};
+  try{
+    await setDoc(doc(db,'vacc_sbp','catarina'),{vaccines:vaccData,updated:serverTimestamp()});
+    renderVaccCalendar();
+    closeVaccModal();
+  }catch(e){alert('Erro ao salvar. Tente novamente.');}
+};
+
+loadVaccCalendar();
+
+// ── CERTIDÃO ───────────────────────────────────────────────────────
+window.openCertidao = function(){
+  window.open('https://certidao.registrocivil.org.br/validar','_blank');
+};
+
+// ── LINHA DO TEMPO ─────────────────────────────────────────────────
+const AUTO_MILESTONES = [
+  {days:0,   title:'🌸 Nascimento',          desc:'Catarina chegou ao mundo! 10/03/2026 às 18h26 no Hospital da Luz.'},
+  {days:7,   title:'🎀 1 semana de vida',     desc:'Uma semana de amor e descobertas.'},
+  {days:30,  title:'🌙 1 mês',               desc:'Primeiro mês completinho!'},
+  {days:60,  title:'🌼 2 meses',             desc:'Dois meses de sorrisos e crescimento.'},
+  {days:90,  title:'🌻 3 meses',             desc:'Três meses de vida.'},
+  {days:180, title:'🎂 6 meses',             desc:'Metade do primeiro ano!'},
+  {days:365, title:'🎉 1 ano de vida',       desc:'Um ano de alegria, amor e memórias.'},
+  {days:730, title:'🎊 2 anos de vida',      desc:'Dois anos da nossa princesa!'},
+];
+
+window.saveMem = async function(){
+  const date=document.getElementById('mem-date').value;
+  const title=document.getElementById('mem-title').value.trim();
+  const desc=document.getElementById('mem-desc').value.trim();
+  if(!date||!title){alert('Informe a data e o título!');return;}
+  const btn=document.getElementById('btn-mem');
+  btn.disabled=true;btn.textContent='Salvando...';
+  try{
+    await addDoc(collection(db,'memories'),{date,title,desc,ts:serverTimestamp()});
+    document.getElementById('mem-date').value='';
+    document.getElementById('mem-title').value='';
+    document.getElementById('mem-desc').value='';
+  }catch(e){alert('Erro ao salvar.');}
+  btn.disabled=false;btn.textContent='💾 Salvar memória';
+};
+
+window.deleteMem = async function(id){
+  if(!confirm('Excluir esta memória?'))return;
+  try{await deleteDoc(doc(db,'memories',id));}
+  catch(e){alert('Erro ao excluir.');}
+};
+
+// Armazena fotos em memória local para abrir no viewer (base64 salvo no Firestore)
+window.openPhotoViewer = function(url,name){
+  document.getElementById('photo-viewer-img').src=url;
+  document.getElementById('photo-viewer-name').textContent=name||'';
+  document.getElementById('photo-viewer').classList.add('open');
+};
+window.closePhotoViewer = function(){
+  document.getElementById('photo-viewer').classList.remove('open');
+  document.getElementById('photo-viewer-img').src='';
+};
+
+window.attachPhoto = function(id){
+  const input=document.createElement('input');
+  input.type='file';input.accept='image/*';
+  input.onchange=async()=>{
+    const file=input.files[0];if(!file)return;
+    const fileName=file.name;
+    const reader=new FileReader();
+    reader.onload=async(e)=>{
+      const b64=e.target.result;
+      try{
+        // Salva base64 diretamente no Firestore (para funcionar sem Storage configurado)
+        // Para arquivos grandes, idealmente usar Firebase Storage
+        await setDoc(doc(db,'memories',id),{photo:b64,photoName:fileName},{merge:true});
+      }catch(err){
+        // Fallback: tenta Storage
+        try{
+          const storageRef=ref(storage,`memories/${id}_${fileName}`);
+          await uploadString(storageRef,b64,'data_url');
+          const url=await getDownloadURL(storageRef);
+          await setDoc(doc(db,'memories',id),{photo:url,photoName:fileName},{merge:true});
+        }catch(err2){alert('Erro ao salvar foto.');}
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+};
+
+onSnapshot(query(collection(db,'memories'),orderBy('ts','asc')),snap=>{
+  const el=document.getElementById('timeline-list');
+  const born=new Date('2026-03-10');
+  const now=new Date();
+
+  const manuals=snap.docs.map(d=>({id:d.id,...d.data(),type:'manual'}));
+  const autos=AUTO_MILESTONES.map(m=>{
+    const mDate=new Date(born);mDate.setDate(born.getDate()+m.days);
+    return{...m,date:mDate.toISOString().slice(0,10),type:'auto',future:mDate>now};
+  });
+
+  const all=[...autos,...manuals].sort((a,b)=>a.date.localeCompare(b.date));
+  if(all.length===0){el.innerHTML='<div class="empty">Nenhuma memória ainda.</div>';return;}
+
+  el.innerHTML=`<div class="timeline-wrap">${all.map(item=>{
+    const dateStr=new Date(item.date+'T12:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+    // Foto: mostra só o nome do arquivo como link clicável
+    const photoName=item.photoName||'foto.jpg';
+    const photoHtml=item.photo
+      ? `<div style="margin-top:8px"><button class="timeline-photo-btn" style="gap:6px;display:inline-flex;align-items:center;" onclick="openPhotoViewer('${item.photo.replace(/'/g,"\\'")}','${photoName.replace(/'/g,"\\'")}')">🖼 ${photoName}</button></div>`
+      : '';
+    const addPhotoBtn=item.id&&!item.photo
+      ? `<button class="timeline-photo-btn" onclick="attachPhoto('${item.id}')" style="margin-top:8px">📷 Vincular foto</button>`
+      : '';
+    const delBtn=item.id?`<button class="timeline-del" onclick="deleteMem('${item.id}')">🗑</button>`:'';
+    return`<div class="timeline-item">
+      <div class="timeline-dot ${item.type==='auto'?'auto':'manual'} ${item.future?'future':''}"></div>
+      <div class="timeline-card ${item.future?'future':''}">
+        ${delBtn}
+        <div class="timeline-date">${dateStr}</div>
+        <div class="timeline-title">${item.title}</div>
+        ${item.desc?`<div class="timeline-desc">${item.desc}</div>`:''}
+        ${photoHtml}
+        ${addPhotoBtn}
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+});
+
+// ── OBSERVAÇÕES ────────────────────────────────────────────────────
 window.saveNote = async function(){
   const t=document.getElementById('note-input').value.trim();
   if(!t)return;
   const btn=document.getElementById('btn-note');
   btn.disabled=true;btn.textContent='Salvando...';
-  try{await addDoc(collection(db,'notes'),{t,d:new Date().toLocaleString('pt-BR'),ts:serverTimestamp()});document.getElementById('note-input').value='';}
-  catch(e){alert('Erro ao salvar.');}
+  try{
+    await addDoc(collection(db,'notes'),{t,d:new Date().toLocaleString('pt-BR'),ts:serverTimestamp()});
+    document.getElementById('note-input').value='';
+  }catch(e){alert('Erro ao salvar.');}
   btn.disabled=false;btn.textContent='Salvar observação';
 };
-window.delNote = async function(id){if(!confirm('Apagar?'))return;await deleteDoc(doc(db,'notes',id));};
+
+window.delNote = async function(id){
+  if(!confirm('Apagar?'))return;
+  await deleteDoc(doc(db,'notes',id));
+};
+
 onSnapshot(query(collection(db,'notes'),orderBy('ts','desc')),snap=>{
   const el=document.getElementById('notes-list');
   if(snap.empty){el.innerHTML='';return;}
-  el.innerHTML=snap.docs.map(d=>`<div class="note-item"><div class="note-date">${d.data().d}</div><div class="note-text">${d.data().t.replace(/\n/g,'<br>')}</div><button class="note-del" onclick="delNote('${d.id}')">✕</button></div>`).join('');
+  el.innerHTML=snap.docs.map(d=>`<div class="note-item">
+    <div class="note-date">${d.data().d}</div>
+    <div class="note-text">${d.data().t.replace(/\n/g,'<br>')}</div>
+    <button class="note-del" onclick="delNote('${d.id}')">✕</button>
+  </div>`).join('');
 });
 
-// VACINAS
-window.saveVacc = async function(){
-  const t=document.getElementById('vacc-input').value.trim();
-  if(!t)return;
-  const btn=document.getElementById('btn-vacc');
-  btn.disabled=true;btn.textContent='Salvando...';
-  try{await addDoc(collection(db,'vacc'),{t,d:new Date().toLocaleString('pt-BR'),ts:serverTimestamp()});document.getElementById('vacc-input').value='';}
-  catch(e){alert('Erro ao salvar.');}
-  btn.disabled=false;btn.textContent='Salvar registro';
-};
-window.delVacc = async function(id){if(!confirm('Apagar?'))return;await deleteDoc(doc(db,'vacc',id));};
-onSnapshot(query(collection(db,'vacc'),orderBy('ts','desc')),snap=>{
-  const el=document.getElementById('vacc-list');
-  if(snap.empty){el.innerHTML='<div class="empty">Nenhum registro ainda.</div>';return;}
-  el.innerHTML=snap.docs.map(d=>`<div class="note-item"><div class="note-date">${d.data().d}</div><div class="note-text">${d.data().t.replace(/\n/g,'<br>')}</div><button class="note-del" onclick="delVacc('${d.id}')">✕</button></div>`).join('');
-});
-
-// ACCORDION
+// ── ACCORDION ──────────────────────────────────────────────────────
 window.tog = function(id){
-  const b=document.getElementById(id);const c=document.getElementById('c-'+id);
-  const o=b.classList.contains('open');b.classList.toggle('open',!o);c.classList.toggle('open',!o);
+  const b=document.getElementById(id);
+  const c=document.getElementById('c-'+id);
+  const o=b.classList.contains('open');
+  b.classList.toggle('open',!o);
+  c.classList.toggle('open',!o);
 };
 </script>
 </body>
