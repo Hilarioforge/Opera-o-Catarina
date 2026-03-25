@@ -228,12 +228,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <button class="tab-btn" onclick="switchTab('medias')" id="tab-medias">
     <span>📈</span>Médias
   </button>
-  <button class="tab-btn" onclick="switchTab('vacinas')" id="tab-vacinas">
-    <span>💉</span>Vacinas
-  </button>
-  <button class="tab-btn" onclick="switchTab('memorias')" id="tab-memorias">
-    <span>📸</span>Memórias
-  </button>
+
 </div>
 
 <!-- PANEL: REGISTRAR -->
@@ -528,11 +523,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const dot = document.getElementById('sync-dot');
-const txt = document.getElementById('sync-txt');
-
-if (dot) dot.className = 'sync-dot';
-if (txt) txt.textContent = 'Conectado — dados em tempo real 🌸';
+document.getElementById('sync-dot').className = 'sync-dot';
+document.getElementById('sync-txt').textContent = 'Conectado — dados em tempo real 🌸';
 
 // ==================
 // DATA / STATE

@@ -82,6 +82,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .eok{color:var(--green);font-weight:600;}
 .loading{text-align:center;padding:12px;color:var(--muted);font-size:13px;}
 .footer{text-align:center;font-size:11px;color:var(--muted);margin-top:20px;padding:0 20px 10px;line-height:1.6;}
+.vacc-item-idx{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;}
+.vacc-dot{width:9px;height:9px;border-radius:50%;margin-top:4px;flex-shrink:0;}
+.vacc-dot.done{background:#10b981;}.vacc-dot.warn{background:#f59e0b;}
+.vacc-info-nm{font-size:13px;font-weight:600;}.vacc-info-dt{font-size:11px;color:var(--muted);margin-top:2px;}
+.vacc-info-nx{font-size:11px;color:#f59e0b;font-weight:600;margin-top:2px;}
+.mem-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:12px;}
+.mem-photo{width:100%;max-height:200px;object-fit:cover;display:block;}
+.mem-body{padding:12px 14px;}
+.mem-title{font-size:14px;font-weight:700;margin-bottom:3px;}
+.mem-text{font-size:12px;color:var(--muted);line-height:1.6;}
+.mem-meta{font-size:11px;color:var(--muted);margin-top:8px;display:flex;align-items:center;justify-content:space-between;}
+.mem-del{background:none;border:none;font-size:13px;color:var(--muted);cursor:pointer;}
 </style>
 </head>
 <body>
@@ -102,7 +114,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div class="section-title">Dados pessoais</div>
   <div class="info-grid">
     <div class="info-card"><div class="ic-label">Nascimento</div><div class="ic-value">10/03/2026</div><div class="ic-sub">18h26 · Hospital da Luz</div></div>
-    <div class="info-card"><div class="ic-label">Tipo Sanguíneo</div><div class="ic-value">O+ 🩸</div><div class="ic-sub">São Paulo — SP</div></div>
+    <div class="info-card"><div class="ic-label">Sexo</div><div class="ic-value">Feminino 👧</div><div class="ic-sub">São Paulo — SP</div></div>
     <div class="info-card"><div class="ic-label">CPF</div><div class="ic-value" style="font-size:13px">163.461.148-91</div><div class="ic-sub">Emitido 11/03/2026</div></div>
     <div class="info-card"><div class="ic-label">Mãe</div><div class="ic-value" style="font-size:13px">Acsa Talita</div><div class="ic-sub">Almeida Brito</div></div>
     <div class="info-card"><div class="ic-label">Pai</div><div class="ic-value" style="font-size:13px">Thiago Hilario</div><div class="ic-sub">Brito Silva</div></div>
@@ -180,12 +192,40 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   </div>
 </div>
 
-<div class="section" style="margin-top:4px">
-  <div class="section-title">Vacinas & Consultas 💉</div>
+<div class="section" style="margin-top:16px">
+  <div class="section-title">Vacinas 💉</div>
   <div class="card-full">
-    <textarea class="note-textarea" id="vacc-input" placeholder="Ex: 15/03/2026 — BCG aplicada. Próxima consulta: 1 mês..."></textarea>
-    <button class="btn-pink" id="btn-vacc" onclick="saveVacc()">Salvar registro</button>
-    <div id="vacc-list" style="margin-top:10px"><div class="loading">Carregando...</div></div>
+    <div class="form-title">➕ Registrar vacina</div>
+    <div class="form-row">
+      <div class="form-group" style="flex:2"><label>Nome da vacina</label><input type="text" id="vacc-nome" placeholder="Ex: BCG, Hepatite B..."></div>
+      <div class="form-group" style="flex:1"><label>Data</label><input type="date" id="vacc-data"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Próxima dose (opcional)</label><input type="date" id="vacc-proxima"></div>
+      <div class="form-group"><label>Obs (opcional)</label><input type="text" id="vacc-obs-idx" placeholder="Reações..."></div>
+    </div>
+    <button class="btn-pink" id="btn-vacc-idx" onclick="saveVaccIdx()">💉 Salvar vacina</button>
+    <div style="font-size:13px;font-weight:600;color:var(--pink);margin:14px 0 6px">📋 Histórico</div>
+    <div id="vacc-idx-list"><div class="loading">Carregando...</div></div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:16px">
+  <div class="section-title">Memórias 📸</div>
+  <div class="card-full">
+    <div class="form-title">💕 Nova memória</div>
+    <label style="display:flex;align-items:center;justify-content:center;gap:8px;padding:20px;border:2px dashed var(--border);border-radius:12px;cursor:pointer;font-size:13px;color:var(--muted);font-weight:500;margin-bottom:10px;" for="mem-file">
+      <span style="font-size:22px;">📷</span> Toque para adicionar foto
+    </label>
+    <input type="file" id="mem-file" accept="image/*" style="display:none;" onchange="previewMem(this)">
+    <img id="mem-preview" style="width:100%;border-radius:12px;max-height:200px;object-fit:cover;margin-bottom:10px;display:none;" alt="preview">
+    <div class="form-row">
+      <div class="form-group"><label>Título</label><input type="text" id="mem-titulo" placeholder="Ex: Primeiro sorriso 😊"></div>
+    </div>
+    <textarea class="note-textarea" id="mem-texto" placeholder="Conte esse momento especial..." style="margin-bottom:10px;min-height:60px;"></textarea>
+    <button class="btn-pink" id="btn-mem" onclick="saveMem()">💕 Salvar memória</button>
+    <div style="font-size:13px;font-weight:600;color:var(--pink);margin:14px 0 6px">📅 Linha do tempo</div>
+    <div id="mem-list"><div class="loading">Carregando...</div></div>
   </div>
 </div>
 
@@ -193,6 +233,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div class="section-title">Documentos</div>
   <div class="doc-item"><span class="doc-icon">📜</span><div><div class="doc-name">Certidão de Nascimento</div><div class="doc-sub">Matrícula: 122044 01 55 2026 1 00775 205 0399574 93</div><div class="doc-sub">9º Subdistrito Vila Mariana — São Paulo/SP · 11/03/2026</div></div></div>
   <div class="doc-item"><span class="doc-icon">🪪</span><div><div class="doc-name">CPF</div><div class="doc-sub">163.461.148-91</div></div></div>
+  <div class="doc-item"><span class="doc-icon">🩸</span><div><div class="doc-name">Tipo Sanguíneo</div><div class="doc-sub">O+</div></div></div>
 </div>
 
 <div class="section" style="margin-top:16px">
@@ -294,90 +335,43 @@ onSnapshot(query(collection(db,'growth'),orderBy('ts','asc')),snap=>{
   const el=document.getElementById('growth-list');
   if(snap.empty){el.innerHTML='<div class="empty">Nenhuma medida registrada ainda.</div>';document.getElementById('growth-chart-wrap').style.display='none';return;}
   
-  const docs = snap.docs.map(d=>d.data()).filter(x=>x.d&&x.p);
-  
- // Gráfico SVG de peso
-if (docs.length >= 2) {
+  // ordena por data (campo d), não por ts
+  const docs = snap.docs.map(d=>d.data()).filter(x=>x.d&&x.p).sort((a,b)=>a.d.localeCompare(b.d));
 
-  // 🔥 ORDENA POR DATA (ESSENCIAL)
-  docs.sort((a, b) => new Date(a.d) - new Date(b.d));
+  // normaliza peso: se valor > 100 assume gramas e converte para kg
+  function normPeso(v){ const n=parseFloat(v); return n>100 ? +(n/1000).toFixed(3) : n; }
+  function fmtPeso(v){ return normPeso(v).toFixed(3).replace(/\.?0+$/,'')+'kg'; }
 
-  const wrap = document.getElementById('growth-chart-wrap');
-  const svg = document.getElementById('growth-svg');
+  // Gráfico SVG de peso
+  if(docs.length >= 2){
+    const wrap = document.getElementById('growth-chart-wrap');
+    const svg = document.getElementById('growth-svg');
+    wrap.style.display='block';
+    const W=300,H=110,PAD=32;
+    const pesos = docs.map(d=>normPeso(d.p));
+    const minP=Math.min(...pesos), maxP=Math.max(...pesos);
+    const range=maxP-minP||0.1;
+    const pts = docs.map((d,i)=>{
+      const x=PAD+(i/(docs.length-1||1))*(W-PAD*2);
+      // Y menor = mais alto no SVG, então peso maior = Y menor = mais alto ✓
+      const y=PAD+((maxP-normPeso(d.p))/range)*(H-PAD*2);
+      return {x,y,p:fmtPeso(d.p),lbl:new Date(d.d+'T12:00').toLocaleDateString('pt-BR',{day:'numeric',month:'short'})};
+    });
+    const pathD=pts.map((p,i)=>(i===0?`M${p.x},${p.y}`:`L${p.x},${p.y}`)).join(' ');
+    const areaD=`M${pts[0].x},${H-PAD} `+pts.map(p=>`L${p.x},${p.y}`).join(' ')+` L${pts[pts.length-1].x},${H-PAD} Z`;
+    svg.innerHTML=`
+      <defs><linearGradient id="pg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ec4899" stop-opacity="0.25"/><stop offset="100%" stop-color="#ec4899" stop-opacity="0"/></linearGradient></defs>
+      <path d="${areaD}" fill="url(#pg)"/>
+      <path d="${pathD}" fill="none" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      ${pts.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="4" fill="#ec4899"/>`).join('')}
+      ${pts.map(p=>`<text x="${p.x}" y="${Math.max(p.y-8,10)}" text-anchor="middle" font-size="9" fill="#ec4899" font-weight="700">${p.p}</text>`).join('')}
+      ${pts.map(p=>`<text x="${p.x}" y="${H-4}" text-anchor="middle" font-size="8" fill="#b07090">${p.lbl}</text>`).join('')}
+    `;
+  }
 
-  wrap.style.display = 'block';
-
-  const W = 300, H = 110, PAD = 30;
-
-  // PESOS COMO NÚMERO
-  const pesos = docs.map(d => Number(d.p));
-
-  const minP = Math.min(...pesos);
-  const maxP = Math.max(...pesos);
-
-  // 🔥 RANGE CORRIGIDO
-  const range = (maxP - minP === 0) ? 1 : (maxP - minP);
-
-  // PONTOS
-  const pts = docs.map((d, i) => {
-    const peso = Number(d.p);
-
-    const x = PAD + (i / (docs.length - 1)) * (W - PAD * 2);
-    const y = H - PAD - ((peso - minP) / range) * (H - PAD * 2);
-
-    return {
-      x,
-      y,
-      p: peso,
-      d: new Date(d.d).toLocaleDateString('pt-BR', {
-        day: 'numeric',
-        month: 'short'
-      })
-    };
-  });
-
-  // LINHA
-  const pathD = pts
-    .map((p, i) => (i === 0 ? `M${p.x},${p.y}` : `L${p.x},${p.y}`))
-    .join(' ');
-
-  // ÁREA
-  const areaD =
-    `M${pts[0].x},${H - PAD} ` +
-    pts.map(p => `L${p.x},${p.y}`).join(' ') +
-    ` L${pts[pts.length - 1].x},${H - PAD} Z`;
-
-  // SVG
-  svg.innerHTML = `
-    <defs>
-      <linearGradient id="pg" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#ec4899" stop-opacity="0.25"/>
-        <stop offset="100%" stop-color="#ec4899" stop-opacity="0"/>
-      </linearGradient>
-    </defs>
-
-    <path d="${areaD}" fill="url(#pg)"/>
-    <path d="${pathD}" fill="none" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-
-    ${pts.map(p => `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#ec4899"/>`).join('')}
-
-    ${pts.map(p => `
-      <text x="${p.x}" y="${p.y - 8}" text-anchor="middle" font-size="9" fill="#ec4899" font-weight="700">
-        ${p.p}kg
-      </text>
-    `).join('')}
-
-    ${pts.map(p => `
-      <text x="${p.x}" y="${H - 8}" text-anchor="middle" font-size="8" fill="#b07090">
-        ${p.d}
-      </text>
-    `).join('')}
-  `;
-}
-  
   // tabela histórico (mais recente primeiro)
-  const docsDesc = snap.docs.map(d=>d.data()).reverse();
-  el.innerHTML=`<table class="growth-table"><tr><th>Data</th><th>Peso</th><th>Altura</th><th>PC</th></tr>${docsDesc.map(x=>`<tr><td>${x.d?new Date(x.d+'T12:00').toLocaleDateString('pt-BR'):'-'}</td><td>${x.p?x.p+'kg':'-'}</td><td>${x.a?x.a+'cm':'-'}</td><td>${x.pc?x.pc+'cm':'-'}</td></tr>`).join('')}</table>`;
+  const docsDesc = [...docs].reverse();
+  el.innerHTML=`<table class="growth-table"><tr><th>Data</th><th>Peso</th><th>Altura</th><th>PC</th></tr>${docsDesc.map(x=>`<tr><td>${x.d?new Date(x.d+'T12:00').toLocaleDateString('pt-BR'):'-'}</td><td>${x.p?fmtPeso(x.p):'-'}</td><td>${x.a?x.a+'cm':'-'}</td><td>${x.pc?x.pc+'cm':'-'}</td></tr>`).join('')}</table>`;
 });
 
   // CONSULTAS
@@ -492,6 +486,94 @@ onSnapshot(query(collection(db,'consults'),orderBy('ts','desc')),snap=>{
     </div>
   `;
 }).join('');
+});
+
+// VACINAS ESTRUTURADAS (index)
+window.saveVaccIdx = async function(){
+  const nome = document.getElementById('vacc-nome').value.trim();
+  const data = document.getElementById('vacc-data').value;
+  const proxima = document.getElementById('vacc-proxima').value;
+  const obs = document.getElementById('vacc-obs-idx').value.trim();
+  if(!nome||!data){alert('Preencha nome e data!');return;}
+  const btn=document.getElementById('btn-vacc-idx');
+  btn.disabled=true;btn.textContent='Salvando...';
+  try{
+    await addDoc(collection(db,'vacinas'),{nome,data,proxima:proxima||'',obs,ts:serverTimestamp()});
+    document.getElementById('vacc-nome').value='';
+    document.getElementById('vacc-data').value='';
+    document.getElementById('vacc-proxima').value='';
+    document.getElementById('vacc-obs-idx').value='';
+  }catch(e){alert('Erro ao salvar.');}
+  btn.disabled=false;btn.textContent='💉 Salvar vacina';
+};
+window.delVaccIdx = async function(id){if(!confirm('Apagar?'))return;await deleteDoc(doc(db,'vacinas',id));};
+onSnapshot(query(collection(db,'vacinas'),orderBy('ts','asc')),snap=>{
+  const el=document.getElementById('vacc-idx-list');
+  if(!el)return;
+  if(snap.empty){el.innerHTML='<div class="empty">Nenhuma vacina registrada ainda.</div>';return;}
+  const today=new Date().toISOString().slice(0,10);
+  el.innerHTML=snap.docs.map(d=>{
+    const v=d.data();
+    const dtFmt=v.data?new Date(v.data+'T12:00').toLocaleDateString('pt-BR'):'—';
+    const nxFmt=v.proxima?new Date(v.proxima+'T12:00').toLocaleDateString('pt-BR'):null;
+    const vencida=v.proxima&&v.proxima<today;
+    return `<div class="vacc-item-idx">
+      <div class="vacc-dot ${vencida?'warn':'done'}"></div>
+      <div style="flex:1">
+        <div class="vacc-info-nm">💉 ${v.nome}</div>
+        <div class="vacc-info-dt">Aplicada em ${dtFmt}</div>
+        ${nxFmt?`<div class="vacc-info-nx">${vencida?'⚠️ Vencida! ':'📅 Próxima: '}${nxFmt}</div>`:''}
+        ${v.obs?`<div class="vacc-info-dt">📝 ${v.obs}</div>`:''}
+      </div>
+      <button class="note-del" onclick="delVaccIdx('${d.id}')">✕</button>
+    </div>`;
+  }).join('');
+});
+
+// MEMÓRIAS (index)
+window.previewMem = function(input){
+  const file=input.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=e=>{const img=document.getElementById('mem-preview');img.src=e.target.result;img.style.display='block';};
+  r.readAsDataURL(file);
+};
+window.saveMem = async function(){
+  const titulo=document.getElementById('mem-titulo').value.trim();
+  const texto=document.getElementById('mem-texto').value.trim();
+  const fileInput=document.getElementById('mem-file');
+  const file=fileInput.files[0];
+  if(!titulo){alert('Informe um título!');return;}
+  const btn=document.getElementById('btn-mem');
+  btn.disabled=true;btn.textContent='Salvando...';
+  try{
+    let fotoUrl='';
+    if(file){fotoUrl=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=rej;r.readAsDataURL(file);});}
+    const now=new Date();
+    await addDoc(collection(db,'memorias'),{titulo,texto,fotoUrl,dataFmt:now.toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'}),ts:serverTimestamp()});
+    document.getElementById('mem-titulo').value='';
+    document.getElementById('mem-texto').value='';
+    fileInput.value='';
+    document.getElementById('mem-preview').style.display='none';
+  }catch(e){alert('Erro ao salvar.');}
+  btn.disabled=false;btn.textContent='💕 Salvar memória';
+};
+window.delMem = async function(id){if(!confirm('Apagar esta memória?'))return;await deleteDoc(doc(db,'memorias',id));};
+onSnapshot(query(collection(db,'memorias'),orderBy('ts','desc')),snap=>{
+  const el=document.getElementById('mem-list');
+  if(!el)return;
+  if(snap.empty){el.innerHTML='<div class="empty">Nenhuma memória ainda 🌸<br><small>Registre o primeiro sorriso, o primeiro banho...</small></div>';return;}
+  el.innerHTML=snap.docs.map(d=>{
+    const m=d.data();
+    return `<div class="mem-card">
+      ${m.fotoUrl?`<img class="mem-photo" src="${m.fotoUrl}" alt="${m.titulo}">`:''}
+      <div class="mem-body">
+        <div class="mem-title">${m.titulo}</div>
+        ${m.texto?`<div class="mem-text">${m.texto.replace(/
+/g,'<br>')}</div>`:''}
+        <div class="mem-meta"><span>📅 ${m.dataFmt||''}</span><button class="mem-del" onclick="delMem('${d.id}')">✕</button></div>
+      </div>
+    </div>`;
+  }).join('');
 });
 
 // ACCORDION
