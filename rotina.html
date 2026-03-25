@@ -926,7 +926,7 @@ window.saveVaccNew = async function() {
   const btn = document.getElementById('btn-vacc-new');
   btn.disabled = true; btn.textContent = 'Salvando...';
   try {
-    await addDoc(collection(db, 'vacinas'), { nome, data, proxima: proxima||'', obs, ts: serverTimestamp() });
+    await addDoc(collection(db, 'vaccinations'), { nome, data, proxima: proxima||'', obs, ts: serverTimestamp() });
     document.getElementById('vacc-nome').value = '';
     document.getElementById('vacc-data').value = '';
     document.getElementById('vacc-proxima').value = '';
@@ -938,10 +938,10 @@ window.saveVaccNew = async function() {
 
 window.delVaccNew = async function(id) {
   if (!confirm('Apagar?')) return;
-  await deleteDoc(doc(db, 'vacinas', id));
+  await deleteDoc(doc(db, 'vaccinations', id));
 };
 
-onSnapshot(query(collection(db, 'vacinas'), orderBy('ts', 'asc')), snap => {
+onSnapshot(query(collection(db, 'vaccinations'), orderBy('ts', 'asc')), snap => {
   const el = document.getElementById('vacc-new-list');
   if (!el) return;
   if (snap.empty) { el.innerHTML = '<div class="empty">Nenhuma vacina registrada ainda 💉</div>'; return; }
@@ -1000,7 +1000,7 @@ window.saveMemory = async function() {
       });
     }
     const now = new Date();
-    await addDoc(collection(db, 'memorias'), {
+    await addDoc(collection(db, 'memories'), {
       titulo, texto, fotoUrl,
       autor: autorAtual || '',
       dataFmt: now.toLocaleDateString('pt-BR', { day:'numeric', month:'long', year:'numeric' }),
@@ -1017,10 +1017,10 @@ window.saveMemory = async function() {
 
 window.delMemory = async function(id) {
   if (!confirm('Apagar esta memória?')) return;
-  await deleteDoc(doc(db, 'memorias', id));
+  await deleteDoc(doc(db, 'memories', id));
 };
 
-onSnapshot(query(collection(db, 'memorias'), orderBy('ts', 'desc')), snap => {
+onSnapshot(query(collection(db, 'memories'), orderBy('ts', 'desc')), snap => {
   const el = document.getElementById('memory-list');
   if (!el) return;
   if (snap.empty) { el.innerHTML = '<div class="empty">Nenhuma memória ainda 🌸<br><small>Registre o primeiro sorriso, o primeiro banho...</small></div>'; return; }
