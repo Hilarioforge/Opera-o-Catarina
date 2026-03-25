@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Catarina">
+<meta name="theme-color" content="#fce7f3">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>Rotina — Catarina 🌸</title>
+<style>
+:root{
+  --bg:#fff5f9;
+  --surface:#ffffff;
+  --surface2:#fce7f3;
+  --border:#fad4e8;
+  --text:#3b1a2e;
+  --muted:#b07090;
+  --pink:#ec4899;
+  --pink-mid:#f9a8d4;
+  --pink-light:#fce7f3;
+  --green:#10b981;
+  --green-bg:#d1fae5;
+  --blue:#6366f1;
+  --blue-bg:#eef2ff;
+  --amber:#f59e0b;
+  --amber-bg:#fef3c7;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:90px;}
+
+/* HERO */
+.hero{background:linear-gradient(160deg,#fce7f3 0%,#fff0f6 100%);padding:28px 20px 22px;text-align:center;border-bottom:1px solid var(--border);}
+.hero-back{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);text-decoration:none;margin-bottom:14px;padding:6px 14px;background:#fff;border:1px solid var(--border);border-radius:20px;}
+.hero-back:active{opacity:.75;}
+.hero-emoji{font-size:44px;display:block;margin-bottom:8px;animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.hero-title{font-family:'Playfair Display',serif;font-size:26px;color:var(--text);}
+.hero-sub{font-size:12px;color:var(--muted);margin-top:4px;}
+.hero-date{display:inline-block;margin-top:12px;background:#fff;border:1px solid var(--border);border-radius:20px;padding:5px 16px;font-size:12px;color:var(--muted);font-weight:500;}
+
+/* SYNC */
+.sync-bar{background:#fff;border-bottom:1px solid var(--border);padding:7px 16px;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#10b981;flex-shrink:0;}
+.sync-dot.off{background:#f59e0b;}
+
+/* TABS */
+.tab-bar{display:flex;background:#fff;border-bottom:2px solid var(--border);position:sticky;top:0;z-index:10;}
+.tab-btn{flex:1;padding:14px 8px;font-size:12px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;font-family:inherit;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;}
+.tab-btn.active{color:var(--pink);border-bottom-color:var(--pink);}
+.tab-btn span{display:block;font-size:18px;margin-bottom:2px;}
+
+/* PANELS */
+.panel{display:none;padding:16px;}
+.panel.active{display:block;}
+
+/* SECTION */
+.section-title{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;}
+
+/* TIMER CARD */
+.timer-card{background:var(--surface);border:1.5px solid var(--border);border-radius:18px;padding:20px;margin-bottom:14px;text-align:center;}
+.timer-card-header{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:16px;}
+.timer-card-icon{font-size:24px;}
+.timer-card-name{font-size:16px;font-weight:600;}
+.timer-display{font-family:'Playfair Display',serif;font-size:52px;color:var(--text);letter-spacing:2px;margin-bottom:18px;line-height:1;}
+.timer-display.running{color:var(--pink);}
+.timer-btns{display:flex;gap:10px;justify-content:center;}
+.btn-start{padding:13px 32px;background:linear-gradient(135deg,#ec4899,#f472b6);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 4px 12px rgba(236,72,153,.25);transition:all .15s;}
+.btn-start:active{opacity:.85;transform:scale(.97);}
+.btn-stop{padding:13px 32px;background:#fff;color:var(--pink);border:2px solid var(--pink);border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;}
+.btn-stop:active{opacity:.85;transform:scale(.97);}
+.btn-stop.hidden,.btn-start.hidden{display:none;}
+.timer-note{margin-top:14px;}
+.timer-note input{width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);font-size:13px;color:var(--text);font-family:inherit;outline:none;}
+.timer-note input:focus{border-color:var(--pink-mid);}
+
+/* FRALDA */
+.fralda-card{background:var(--surface);border:1.5px solid var(--border);border-radius:18px;padding:20px;margin-bottom:14px;}
+.fralda-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.fralda-title{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600;}
+.fralda-count-today{background:var(--amber-bg);color:var(--amber);font-size:13px;font-weight:700;padding:5px 14px;border-radius:20px;}
+.fralda-types{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.fralda-btn{padding:14px 8px;border:1.5px solid var(--border);border-radius:12px;background:#fff;cursor:pointer;text-align:center;font-family:inherit;transition:all .15s;}
+.fralda-btn:active{transform:scale(.95);}
+.fralda-btn .fb-icon{font-size:22px;display:block;margin-bottom:4px;}
+.fralda-btn .fb-label{font-size:11px;font-weight:600;color:var(--muted);}
+.fralda-btn.xixi{border-color:#93c5fd;}
+.fralda-btn.coco{border-color:#a78bfa;}
+.fralda-btn.mista{border-color:#fca5a5;}
+
+/* DAILY STATS */
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;}
+.stat-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:13px;text-align:center;}
+.stat-icon{font-size:20px;margin-bottom:4px;}
+.stat-value{font-size:20px;font-weight:700;color:var(--text);}
+.stat-label{font-size:10px;color:var(--muted);margin-top:2px;font-weight:500;}
+
+/* HISTORY LIST */
+.history-day{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;margin-bottom:12px;overflow:hidden;}
+.history-day-header{background:var(--pink-light);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;}
+.history-day-title{font-size:13px;font-weight:700;color:var(--text);}
+.history-day-badges{display:flex;gap:6px;}
+.badge{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;}
+.badge-pink{background:#fce7f3;color:var(--pink);}
+.badge-green{background:var(--green-bg);color:#065f46;}
+.badge-amber{background:var(--amber-bg);color:#92400e;}
+.history-entry{padding:10px 16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.history-entry-icon{font-size:16px;flex-shrink:0;}
+.history-entry-info{flex:1;}
+.history-entry-main{font-size:13px;font-weight:500;}
+.history-entry-sub{font-size:11px;color:var(--muted);}
+.history-del{background:none;border:none;font-size:13px;color:var(--muted);cursor:pointer;padding:4px 8px;border-radius:6px;}
+.history-del:active{background:var(--surface2);}
+.empty{text-align:center;font-size:13px;color:var(--muted);padding:20px 0;}
+.loading{text-align:center;padding:16px;color:var(--muted);font-size:13px;}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);display:flex;padding:8px 0 env(safe-area-inset-bottom,8px);z-index:100;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;font-weight:600;color:var(--muted);text-decoration:none;padding:4px 0;}
+.nav-item.active{color:var(--pink);}
+.nav-item span:first-child{font-size:22px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:#fff;padding:10px 22px;border-radius:30px;font-size:13px;font-weight:500;opacity:0;transition:all .3s;z-index:200;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* PEITO SELECTOR */
+.peito-selector{display:flex;gap:8px;margin-bottom:16px;}
+.peito-btn{flex:1;padding:11px 8px;border:2px solid var(--border);border-radius:12px;background:#fff;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;color:var(--muted);transition:all .18s;display:flex;align-items:center;justify-content:center;gap:6px;}
+.peito-btn:active{transform:scale(.96);}
+.peito-btn.selected{border-color:var(--pink);background:var(--pink-light);color:var(--pink);}
+.peito-btn .pb-icon{font-size:18px;}
+.peito-label{font-size:11px;font-weight:600;color:var(--muted);text-align:center;margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em;}
+
+/* FILTER */
+.filter-bar{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px;}
+.filter-btn{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;white-space:nowrap;font-family:inherit;}
+.filter-btn.active{background:var(--pink);color:#fff;border-color:var(--pink);}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <a href="index.html" class="hero-back">← Voltar para o início</a>
+  <span class="hero-emoji">🍼</span>
+  <div class="hero-title">Rotina da Catarina</div>
+  <div class="hero-sub">Registre mamadas, sonecas e trocas de fralda</div>
+  <div class="hero-date" id="hero-date">carregando...</div>
+</div>
+
+<div class="sync-bar">
+  <div class="sync-dot" id="sync-dot"></div>
+  <span id="sync-txt">Conectando...</span>
+</div>
+
+<!-- TABS -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('registrar')" id="tab-registrar">
+    <span>➕</span>Registrar
+  </button>
+  <button class="tab-btn" onclick="switchTab('hoje')" id="tab-hoje">
+    <span>📊</span>Hoje
+  </button>
+  <button class="tab-btn" onclick="switchTab('historico')" id="tab-historico">
+    <span>📅</span>Histórico
+  </button>
+</div>
+
+<!-- PANEL: REGISTRAR -->
+<div class="panel active" id="panel-registrar">
+
+  <!-- MAMADEIRA/PEITO -->
+  <div class="section-title" style="margin-top:4px">🍼 Mamadeira / Amamentação</div>
+  <div class="timer-card">
+    <div class="timer-card-header">
+      <span class="timer-card-icon">🍼</span>
+      <span class="timer-card-name">Mamada</span>
+    </div>
+    <div class="peito-label">Qual peito?</div>
+    <div class="peito-selector">
+      <button class="peito-btn" id="peito-esq" onclick="selectPeito('esquerdo')">
+        <span class="pb-icon">◀️</span> Esquerdo
+      </button>
+      <button class="peito-btn" id="peito-dir" onclick="selectPeito('direito')">
+        Direito <span class="pb-icon">▶️</span>
+      </button>
+    </div>
+    <div class="timer-display" id="mama-display">00:00</div>
+    <div class="timer-btns">
+      <button class="btn-start" id="mama-start-btn" onclick="startTimer('mama')">▶ Iniciar</button>
+      <button class="btn-stop hidden" id="mama-stop-btn" onclick="stopTimer('mama')">⏹ Finalizar</button>
+    </div>
+    <div class="timer-note" style="margin-top:14px">
+      <input type="text" id="mama-obs" placeholder="Observação (opcional)...">
+    </div>
+  </div>
+
+  <!-- SONECA -->
+  <div class="section-title">😴 Soneca</div>
+  <div class="timer-card">
+    <div class="timer-card-header">
+      <span class="timer-card-icon">😴</span>
+      <span class="timer-card-name">Soneca</span>
+    </div>
+    <div class="timer-display" id="sono-display">00:00</div>
+    <div id="sono-inicio-label" style="font-size:12px;color:var(--muted);margin-bottom:14px;display:none;">
+      🕐 Iniciou às <strong id="sono-inicio-str">--:--</strong>
+    </div>
+    <div class="timer-btns">
+      <button class="btn-start" id="sono-start-btn" onclick="startTimer('sono')">▶ Iniciar</button>
+      <button class="btn-stop hidden" id="sono-stop-btn" onclick="stopTimer('sono')">⏹ Finalizar</button>
+    </div>
+    <div class="timer-note">
+      <input type="text" id="sono-obs" placeholder="Observação (opcional)...">
+    </div>
+  </div>
+
+  <!-- FRALDA -->
+  <div class="section-title">🩲 Troca de Fralda</div>
+  <div class="fralda-card">
+    <div class="fralda-header">
+      <div class="fralda-title"><span>🩲</span> Trocas hoje</div>
+      <div class="fralda-count-today" id="fralda-count-today">0 trocas</div>
+    </div>
+    <div class="fralda-types">
+      <button class="fralda-btn xixi" onclick="registrarFralda('xixi')">
+        <span class="fb-icon">💧</span>
+        <span class="fb-label">Xixi</span>
+      </button>
+      <button class="fralda-btn coco" onclick="registrarFralda('coco')">
+        <span class="fb-icon">💩</span>
+        <span class="fb-label">Cocô</span>
+      </button>
+      <button class="fralda-btn mista" onclick="registrarFralda('mista')">
+        <span class="fb-icon">🔀</span>
+        <span class="fb-label">Mista</span>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- PANEL: HOJE -->
+<div class="panel" id="panel-hoje">
+
+  <div class="section-title" style="margin-top:4px">Resumo de hoje</div>
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon">🍼</div>
+      <div class="stat-value" id="stat-mama-count">0</div>
+      <div class="stat-label">Mamadas</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">😴</div>
+      <div class="stat-value" id="stat-sono-count">0</div>
+      <div class="stat-label">Sonecas</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🩲</div>
+      <div class="stat-value" id="stat-fralda-count">0</div>
+      <div class="stat-label">Trocas</div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card" style="grid-column:span 2">
+      <div class="stat-icon">🍼</div>
+      <div class="stat-value" id="stat-mama-time">0min</div>
+      <div class="stat-label">Total mamando</div>
+    </div>
+    <div class="stat-card" style="grid-column:span 1">
+      <div class="stat-icon">😴</div>
+      <div class="stat-value" id="stat-sono-time">0h</div>
+      <div class="stat-label">Total dormindo</div>
+    </div>
+  </div>
+
+  <div class="section-title" style="margin-top:8px">Registros de hoje</div>
+  <div id="today-list"><div class="loading">Carregando...</div></div>
+
+</div>
+
+<!-- PANEL: HISTÓRICO -->
+<div class="panel" id="panel-historico">
+
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="setFilter('todos')" id="filter-todos">Todos</button>
+    <button class="filter-btn" onclick="setFilter('mama')" id="filter-mama">🍼 Mamadas</button>
+    <button class="filter-btn" onclick="setFilter('sono')" id="filter-sono">😴 Sonecas</button>
+    <button class="filter-btn" onclick="setFilter('fralda')" id="filter-fralda">🩲 Fraldas</button>
+  </div>
+
+  <div id="history-list"><div class="loading">Carregando...</div></div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <a href="index.html" class="nav-item">
+    <span>🏠</span>
+    <span>Início</span>
+  </a>
+  <a href="rotina.html" class="nav-item active">
+    <span>🍼</span>
+    <span>Rotina</span>
+  </a>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, where, Timestamp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCrVxYju5nYLYyXaczK76znjqVQmnWwMnM",
+  authDomain: "operacaocatarina.firebaseapp.com",
+  projectId: "operacaocatarina",
+  storageBucket: "operacaocatarina.firebasestorage.app",
+  messagingSenderId: "833161287638",
+  appId: "1:833161287638:web:7915602c944d5319793677"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+document.getElementById('sync-dot').className = 'sync-dot';
+document.getElementById('sync-txt').textContent = 'Conectado — dados em tempo real 🌸';
+
+// ==================
+// DATA / STATE
+// ==================
+const timers = {
+  mama: { running: false, startTime: null, interval: null },
+  sono: { running: false, startTime: null, interval: null }
+};
+
+let currentFilter = 'todos';
+let peitoSelecionado = null;
+
+window.selectPeito = function(lado) {
+  peitoSelecionado = lado;
+  document.getElementById('peito-esq').classList.toggle('selected', lado === 'esquerdo');
+  document.getElementById('peito-dir').classList.toggle('selected', lado === 'direito');
+};
+let allEntries = [];
+
+// ==================
+// DATE HEADER
+// ==================
+function updateDateHeader() {
+  const now = new Date();
+  const opts = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+  document.getElementById('hero-date').textContent = now.toLocaleDateString('pt-BR', opts);
+}
+updateDateHeader();
+
+// ==================
+// TIMERS
+// ==================
+function pad(n) { return String(n).padStart(2, '0'); }
+
+function formatDuration(seconds) {
+  if (seconds < 3600) return `${pad(Math.floor(seconds/60))}:${pad(seconds%60)}`;
+  return `${pad(Math.floor(seconds/3600))}:${pad(Math.floor((seconds%3600)/60))}:${pad(seconds%60)}`;
+}
+
+function formatDurationLabel(seconds) {
+  const h = Math.floor(seconds/3600);
+  const m = Math.floor((seconds%3600)/60);
+  const s = seconds%60;
+  if (h > 0) return `${h}h ${m}min`;
+  if (m > 0) return `${m}min ${s}s`;
+  return `${s}s`;
+}
+
+window.startTimer = function(type) {
+  const t = timers[type];
+  if (t.running) return;
+  t.running = true;
+  t.startTime = Date.now();
+  t.startDate = new Date();
+  document.getElementById(`${type}-start-btn`).classList.add('hidden');
+  document.getElementById(`${type}-stop-btn`).classList.remove('hidden');
+  const display = document.getElementById(`${type}-display`);
+  display.classList.add('running');
+  // mostrar horário de início para soneca
+  if (type === 'sono') {
+    const hStr = t.startDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('sono-inicio-str').textContent = hStr;
+    document.getElementById('sono-inicio-label').style.display = 'block';
+  }
+  t.interval = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - t.startTime) / 1000);
+    display.textContent = formatDuration(elapsed);
+  }, 1000);
+};
+
+window.stopTimer = async function(type) {
+  const t = timers[type];
+  if (!t.running) return;
+  clearInterval(t.interval);
+  const duration = Math.floor((Date.now() - t.startTime) / 1000);
+  t.running = false;
+  document.getElementById(`${type}-start-btn`).classList.remove('hidden');
+  document.getElementById(`${type}-stop-btn`).classList.add('hidden');
+  const display = document.getElementById(`${type}-display`);
+  display.classList.remove('running');
+  display.textContent = '00:00';
+
+  const obs = document.getElementById(`${type}-obs`).value.trim();
+  document.getElementById(`${type}-obs`).value = '';
+
+  // captura peito selecionado (só para mamadas)
+  const peito = (type === 'mama') ? peitoSelecionado : null;
+  // reseta seletor visual após finalizar
+  if (type === 'mama') {
+    peitoSelecionado = null;
+    document.getElementById('peito-esq').classList.remove('selected');
+    document.getElementById('peito-dir').classList.remove('selected');
+  }
+
+  const now = new Date();
+  const dateKey = now.toISOString().slice(0, 10);
+  const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+  // dados extras para soneca
+  let sonoExtra = {};
+  if (type === 'sono') {
+    const startDate = timers[type].startDate || now;
+    const startTimeStr = startDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const endTimeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const startHour = startDate.getHours();
+    // dia: 6h–19h59 | noite: 20h–5h59
+    const periodo = (startHour >= 6 && startHour < 20) ? 'dia' : 'noite';
+    sonoExtra = { startTimeStr, endTimeStr, periodo };
+    // esconde label de início
+    document.getElementById('sono-inicio-label').style.display = 'none';
+    document.getElementById('sono-inicio-str').textContent = '--:--';
+  }
+
+  try {
+    const data = { tipo: type, duration, obs, dateKey, timeStr, ts: serverTimestamp(), ...sonoExtra };
+    if (peito) data.peito = peito;
+    await addDoc(collection(db, 'rotina'), data);
+    const peitoLabel = peito ? ` · Peito ${peito}` : '';
+    if (type === 'sono') {
+      const p = sonoExtra.periodo === 'dia' ? '🌤️ Dia' : '🌙 Noite';
+      showToast(`😴 Soneca registrada — ${formatDurationLabel(duration)} · ${p}`);
+    } else {
+      showToast(type === 'mama' ? `🍼 Mamada registrada — ${formatDurationLabel(duration)}${peitoLabel}` : `Registrado!`);
+    }
+  } catch(e) {
+    alert('Erro ao salvar.');
+  }
+};
+
+// ==================
+// FRALDA
+// ==================
+window.registrarFralda = async function(tipo) {
+  const now = new Date();
+  const dateKey = now.toISOString().slice(0, 10);
+  const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  const labels = { xixi: '💧 Xixi', coco: '💩 Cocô', mista: '🔀 Mista' };
+  try {
+    await addDoc(collection(db, 'rotina'), {
+      tipo: 'fralda',
+      subTipo: tipo,
+      dateKey,
+      timeStr,
+      ts: serverTimestamp()
+    });
+    showToast(`🩲 Fralda registrada — ${labels[tipo]}`);
+  } catch(e) {
+    alert('Erro ao salvar.');
+  }
+};
+
+// ==================
+// DELETE
+// ==================
+window.delEntry = async function(id) {
+  if (!confirm('Apagar este registro?')) return;
+  await deleteDoc(doc(db, 'rotina', id));
+};
+
+// ==================
+// TOAST
+// ==================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ==================
+// TABS
+// ==================
+window.switchTab = function(tab) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + tab).classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+};
+
+// ==================
+// FILTER
+// ==================
+window.setFilter = function(f) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('filter-' + f).classList.add('active');
+  renderHistory(allEntries);
+};
+
+// ==================
+// RENDER HELPERS
+// ==================
+function entryIcon(e) {
+  if (e.tipo === 'mama') return '🍼';
+  if (e.tipo === 'sono') return e.periodo === 'noite' ? '🌙' : '🌤️';
+  if (e.tipo === 'fralda') {
+    return e.subTipo === 'xixi' ? '💧' : e.subTipo === 'coco' ? '💩' : '🔀';
+  }
+  return '📝';
+}
+
+function entryMain(e) {
+  if (e.tipo === 'mama') {
+    const peitoStr = e.peito ? ` · Peito ${e.peito}` : '';
+    return `Mamada — ${formatDurationLabel(e.duration || 0)}${peitoStr}`;
+  }
+  if (e.tipo === 'sono') {
+    const periodo = e.periodo === 'noite' ? '🌙 Noite' : '🌤️ Dia';
+    const horarios = (e.startTimeStr && e.endTimeStr) ? ` · ${e.startTimeStr} → ${e.endTimeStr}` : '';
+    return `Soneca ${periodo} — ${formatDurationLabel(e.duration || 0)}${horarios}`;
+  }
+  if (e.tipo === 'fralda') {
+    const l = { xixi: 'Xixi', coco: 'Cocô', mista: 'Mista' };
+    return `Troca de fralda — ${l[e.subTipo] || ''}`;
+  }
+  return 'Registro';
+}
+
+function entryBadgeClass(tipo) {
+  if (tipo === 'mama') return 'badge badge-pink';
+  if (tipo === 'sono') return 'badge badge-green';
+  return 'badge badge-amber';
+}
+
+// ==================
+// TODAY
+// ==================
+function renderToday(entries) {
+  const todayKey = new Date().toISOString().slice(0, 10);
+  const todayEntries = entries.filter(e => e.dateKey === todayKey);
+
+  // stats
+  const mamas = todayEntries.filter(e => e.tipo === 'mama');
+  const sonos = todayEntries.filter(e => e.tipo === 'sono');
+  const fraldas = todayEntries.filter(e => e.tipo === 'fralda');
+  const mamaTotalSec = mamas.reduce((s, e) => s + (e.duration || 0), 0);
+  const sonoTotalSec = sonos.reduce((s, e) => s + (e.duration || 0), 0);
+
+  document.getElementById('stat-mama-count').textContent = mamas.length;
+  document.getElementById('stat-sono-count').textContent = sonos.length;
+  document.getElementById('stat-fralda-count').textContent = fraldas.length;
+  document.getElementById('fralda-count-today').textContent = fraldas.length + (fraldas.length === 1 ? ' troca' : ' trocas');
+
+  const mamaMin = Math.round(mamaTotalSec / 60);
+  document.getElementById('stat-mama-time').textContent = mamaMin >= 60 ? `${Math.floor(mamaMin/60)}h${mamaMin%60}min` : `${mamaMin}min`;
+  const sonoH = sonoTotalSec / 3600;
+  document.getElementById('stat-sono-time').textContent = sonoH >= 1 ? `${sonoH.toFixed(1)}h` : `${Math.round(sonoTotalSec/60)}min`;
+
+  // list
+  const el = document.getElementById('today-list');
+  if (todayEntries.length === 0) {
+    el.innerHTML = '<div class="empty">Nenhum registro ainda hoje 🌸</div>';
+    return;
+  }
+  el.innerHTML = todayEntries.sort((a,b) => (b.ts?.seconds||0) - (a.ts?.seconds||0)).map(e => `
+    <div class="history-entry">
+      <span class="history-entry-icon">${entryIcon(e)}</span>
+      <div class="history-entry-info">
+        <div class="history-entry-main">${entryMain(e)}</div>
+        <div class="history-entry-sub">${e.timeStr || ''}${e.obs ? ' · ' + e.obs : ''}</div>
+      </div>
+      <button class="history-del" onclick="delEntry('${e._id}')">✕</button>
+    </div>
+  `).join('');
+}
+
+// ==================
+// HISTORY
+// ==================
+function renderHistory(entries) {
+  const filtered = currentFilter === 'todos' ? entries : entries.filter(e => e.tipo === currentFilter);
+  const el = document.getElementById('history-list');
+  if (filtered.length === 0) {
+    el.innerHTML = '<div class="empty">Nenhum registro encontrado 🌸</div>';
+    return;
+  }
+
+  // group by dateKey
+  const groups = {};
+  filtered.forEach(e => {
+    if (!groups[e.dateKey]) groups[e.dateKey] = [];
+    groups[e.dateKey].push(e);
+  });
+
+  const sortedDays = Object.keys(groups).sort((a, b) => b.localeCompare(a));
+
+  el.innerHTML = sortedDays.map(day => {
+    const dayEntries = groups[day];
+    const mamas = dayEntries.filter(e => e.tipo === 'mama');
+    const sonos = dayEntries.filter(e => e.tipo === 'sono');
+    const fraldas = dayEntries.filter(e => e.tipo === 'fralda');
+
+    const dateLabel = (() => {
+      const [y, m, d] = day.split('-');
+      const today = new Date().toISOString().slice(0, 10);
+      const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+      if (day === today) return 'Hoje';
+      if (day === yesterday) return 'Ontem';
+      return new Date(day + 'T12:00').toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+    })();
+
+    const mamaTotalSec = mamas.reduce((s, e) => s + (e.duration || 0), 0);
+    const sonoTotalSec = sonos.reduce((s, e) => s + (e.duration || 0), 0);
+
+    const badges = [];
+    if (mamas.length) badges.push(`<span class="badge badge-pink">🍼 ${mamas.length}x · ${formatDurationLabel(mamaTotalSec)}</span>`);
+    if (sonos.length) badges.push(`<span class="badge badge-green">😴 ${sonos.length}x · ${formatDurationLabel(sonoTotalSec)}</span>`);
+    if (fraldas.length) badges.push(`<span class="badge badge-amber">🩲 ${fraldas.length}x</span>`);
+
+    const entriesHtml = dayEntries.sort((a,b) => (b.ts?.seconds||0)-(a.ts?.seconds||0)).map(e => `
+      <div class="history-entry">
+        <span class="history-entry-icon">${entryIcon(e)}</span>
+        <div class="history-entry-info">
+          <div class="history-entry-main">${entryMain(e)}</div>
+          <div class="history-entry-sub">${e.timeStr || ''}${e.obs ? ' · ' + e.obs : ''}</div>
+        </div>
+        <button class="history-del" onclick="delEntry('${e._id}')">✕</button>
+      </div>
+    `).join('');
+
+    return `
+      <div class="history-day">
+        <div class="history-day-header">
+          <div class="history-day-title">${dateLabel}</div>
+          <div class="history-day-badges">${badges.join('')}</div>
+        </div>
+        ${entriesHtml}
+      </div>
+    `;
+  }).join('');
+}
+
+// ==================
+// REALTIME LISTENER
+// ==================
+onSnapshot(query(collection(db, 'rotina'), orderBy('ts', 'desc')), snap => {
+  allEntries = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+  renderToday(allEntries);
+  renderHistory(allEntries);
+});
+
+</script>
+</body>
+</html>
