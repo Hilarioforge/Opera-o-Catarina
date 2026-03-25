@@ -102,7 +102,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div class="section-title">Dados pessoais</div>
   <div class="info-grid">
     <div class="info-card"><div class="ic-label">Nascimento</div><div class="ic-value">10/03/2026</div><div class="ic-sub">18h26 · Hospital da Luz</div></div>
-    <div class="info-card"><div class="ic-label">Sexo</div><div class="ic-value">Feminino 👧</div><div class="ic-sub">São Paulo — SP</div></div>
+    <div class="info-card"><div class="ic-label">Tipo Sanguíneo</div><div class="ic-value">O+ 🩸</div><div class="ic-sub">São Paulo — SP</div></div>
     <div class="info-card"><div class="ic-label">CPF</div><div class="ic-value" style="font-size:13px">163.461.148-91</div><div class="ic-sub">Emitido 11/03/2026</div></div>
     <div class="info-card"><div class="ic-label">Mãe</div><div class="ic-value" style="font-size:13px">Acsa Talita</div><div class="ic-sub">Almeida Brito</div></div>
     <div class="info-card"><div class="ic-label">Pai</div><div class="ic-value" style="font-size:13px">Thiago Hilario</div><div class="ic-sub">Brito Silva</div></div>
@@ -193,7 +193,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div class="section-title">Documentos</div>
   <div class="doc-item"><span class="doc-icon">📜</span><div><div class="doc-name">Certidão de Nascimento</div><div class="doc-sub">Matrícula: 122044 01 55 2026 1 00775 205 0399574 93</div><div class="doc-sub">9º Subdistrito Vila Mariana — São Paulo/SP · 11/03/2026</div></div></div>
   <div class="doc-item"><span class="doc-icon">🪪</span><div><div class="doc-name">CPF</div><div class="doc-sub">163.461.148-91</div></div></div>
-  <div class="doc-item"><span class="doc-icon">🩸</span><div><div class="doc-name">Tipo Sanguíneo</div><div class="doc-sub">O+</div></div></div>
 </div>
 
 <div class="section" style="margin-top:16px">
@@ -297,31 +296,84 @@ onSnapshot(query(collection(db,'growth'),orderBy('ts','asc')),snap=>{
   
   const docs = snap.docs.map(d=>d.data()).filter(x=>x.d&&x.p);
   
-  // Gráfico SVG de peso
-  if(docs.length >= 2){
-    const wrap = document.getElementById('growth-chart-wrap');
-    const svg = document.getElementById('growth-svg');
-    wrap.style.display='block';
-    const W=300,H=110,PAD=30;
-    const pesos = docs.map(d=>parseFloat(d.p));
-    const minP=Math.min(...pesos), maxP=Math.max(...pesos);
-    const range=maxP-minP||0.5;
-    const pts = docs.map((d,i)=>{
-      const x=PAD+(i/(docs.length-1))*(W-PAD*2);
-      const y=H-PAD-((parseFloat(d.p)-minP)/range)*(H-PAD*2);
-      return {x,y,p:d.p,d:new Date(d.d+'T12:00').toLocaleDateString('pt-BR',{day:'numeric',month:'short'})};
-    });
-    const pathD=pts.map((p,i)=>(i===0?`M${p.x},${p.y}`:`L${p.x},${p.y}`)).join(' ');
-    const areaD=`M${pts[0].x},${H-PAD} `+pts.map(p=>`L${p.x},${p.y}`).join(' ')+` L${pts[pts.length-1].x},${H-PAD} Z`;
-    svg.innerHTML=`
-      <defs><linearGradient id="pg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ec4899" stop-opacity="0.25"/><stop offset="100%" stop-color="#ec4899" stop-opacity="0"/></linearGradient></defs>
-      <path d="${areaD}" fill="url(#pg)"/>
-      <path d="${pathD}" fill="none" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-      ${pts.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="4" fill="#ec4899"/>`).join('')}
-      ${pts.map(p=>`<text x="${p.x}" y="${p.y-8}" text-anchor="middle" font-size="9" fill="#ec4899" font-weight="700">${p.p}kg</text>`).join('')}
-      ${pts.map(p=>`<text x="${p.x}" y="${H-8}" text-anchor="middle" font-size="8" fill="#b07090">${p.d}</text>`).join('')}
-    `;
-  }
+ // Gráfico SVG de peso
+if (docs.length >= 2) {
+
+  // 🔥 ORDENA POR DATA (ESSENCIAL)
+  docs.sort((a, b) => new Date(a.d) - new Date(b.d));
+
+  const wrap = document.getElementById('growth-chart-wrap');
+  const svg = document.getElementById('growth-svg');
+
+  wrap.style.display = 'block';
+
+  const W = 300, H = 110, PAD = 30;
+
+  // PESOS COMO NÚMERO
+  const pesos = docs.map(d => Number(d.p));
+
+  const minP = Math.min(...pesos);
+  const maxP = Math.max(...pesos);
+
+  // 🔥 RANGE CORRIGIDO
+  const range = (maxP - minP === 0) ? 1 : (maxP - minP);
+
+  // PONTOS
+  const pts = docs.map((d, i) => {
+    const peso = Number(d.p);
+
+    const x = PAD + (i / (docs.length - 1)) * (W - PAD * 2);
+    const y = H - PAD - ((peso - minP) / range) * (H - PAD * 2);
+
+    return {
+      x,
+      y,
+      p: peso,
+      d: new Date(d.d).toLocaleDateString('pt-BR', {
+        day: 'numeric',
+        month: 'short'
+      })
+    };
+  });
+
+  // LINHA
+  const pathD = pts
+    .map((p, i) => (i === 0 ? `M${p.x},${p.y}` : `L${p.x},${p.y}`))
+    .join(' ');
+
+  // ÁREA
+  const areaD =
+    `M${pts[0].x},${H - PAD} ` +
+    pts.map(p => `L${p.x},${p.y}`).join(' ') +
+    ` L${pts[pts.length - 1].x},${H - PAD} Z`;
+
+  // SVG
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="pg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#ec4899" stop-opacity="0.25"/>
+        <stop offset="100%" stop-color="#ec4899" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+
+    <path d="${areaD}" fill="url(#pg)"/>
+    <path d="${pathD}" fill="none" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+    ${pts.map(p => `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#ec4899"/>`).join('')}
+
+    ${pts.map(p => `
+      <text x="${p.x}" y="${p.y - 8}" text-anchor="middle" font-size="9" fill="#ec4899" font-weight="700">
+        ${p.p}kg
+      </text>
+    `).join('')}
+
+    ${pts.map(p => `
+      <text x="${p.x}" y="${H - 8}" text-anchor="middle" font-size="8" fill="#b07090">
+        ${p.d}
+      </text>
+    `).join('')}
+  `;
+}
   
   // tabela histórico (mais recente primeiro)
   const docsDesc = snap.docs.map(d=>d.data()).reverse();
