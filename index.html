@@ -113,11 +113,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .certidao-view-btn{margin-left:auto;font-size:11px;padding:5px 12px;background:linear-gradient(135deg,#1a3a6e,#2d5a9e);color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:600;white-space:nowrap;}
 
 /* VISUALIZADOR FOTO */
-.photo-viewer{display:none;position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:2000;align-items:center;justify-content:center;flex-direction:column;padding:16px;}
-.photo-viewer.open{display:flex;}
-.photo-viewer img{max-width:100%;max-height:82vh;border-radius:8px;object-fit:contain;}
-.photo-viewer-name{color:rgba(255,255,255,.6);font-size:12px;margin-top:10px;}
-.photo-viewer-close{color:#fff;font-size:14px;font-weight:600;margin-top:14px;padding:9px 22px;background:rgba(255,255,255,.15);border:none;border-radius:20px;cursor:pointer;font-family:inherit;}
+
 
 /* LINHA DO TEMPO */
 .timeline-wrap{position:relative;padding-left:28px;}
@@ -132,8 +128,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .timeline-date{font-size:10px;color:var(--muted);margin-bottom:3px;}
 .timeline-title{font-size:13px;font-weight:700;color:var(--text);}
 .timeline-desc{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5;}
-.timeline-photo{width:100%;border-radius:8px;margin-top:8px;max-height:180px;object-fit:cover;}
-.timeline-photo-btn{font-size:11px;padding:5px 12px;background:var(--surface2);color:var(--pink);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-family:inherit;font-weight:600;margin-top:6px;}
+
 .timeline-del{float:right;background:none;border:none;font-size:13px;color:var(--muted);cursor:pointer;padding:0 0 4px 8px;}
 </style>
 </head>
@@ -232,11 +227,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 </div>
 
 <!-- VISUALIZADOR DE FOTO -->
-<div class="photo-viewer" id="photo-viewer">
-  <img id="photo-viewer-img" src="" alt="">
-  <div class="photo-viewer-name" id="photo-viewer-name"></div>
-  <button class="photo-viewer-close" onclick="closePhotoViewer()">✕ Fechar</button>
-</div>
+
 
 <!-- LINHA DO TEMPO -->
 <div class="section" style="margin-top:16px">
@@ -310,7 +301,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
 import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
-import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-storage.js";
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyCrVxYju5nYLYyXaczK76znjqVQmnWwMnM",
@@ -323,7 +314,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const storage = getStorage(app);
+
 
 document.getElementById('sync-dot').className = 'sync-dot';
 document.getElementById('sync-txt').textContent = 'Conectado — dados compartilhados em tempo real 🌸';
@@ -509,45 +500,6 @@ window.deleteMem = async function(id){
   catch(e){alert('Erro ao excluir.');}
 };
 
-// Armazena fotos em memória local para abrir no viewer (base64 salvo no Firestore)
-window.openPhotoViewer = function(url,name){
-  document.getElementById('photo-viewer-img').src=url;
-  document.getElementById('photo-viewer-name').textContent=name||'';
-  document.getElementById('photo-viewer').classList.add('open');
-};
-window.closePhotoViewer = function(){
-  document.getElementById('photo-viewer').classList.remove('open');
-  document.getElementById('photo-viewer-img').src='';
-};
-
-window.attachPhoto = function(id){
-  const input=document.createElement('input');
-  input.type='file';input.accept='image/*';
-  input.onchange=async()=>{
-    const file=input.files[0];if(!file)return;
-    const fileName=file.name;
-    const reader=new FileReader();
-    reader.onload=async(e)=>{
-      const b64=e.target.result;
-      try{
-        // Salva base64 diretamente no Firestore (para funcionar sem Storage configurado)
-        // Para arquivos grandes, idealmente usar Firebase Storage
-        await setDoc(doc(db,'memories',id),{photo:b64,photoName:fileName},{merge:true});
-      }catch(err){
-        // Fallback: tenta Storage
-        try{
-          const storageRef=ref(storage,`memories/${id}_${fileName}`);
-          await uploadString(storageRef,b64,'data_url');
-          const url=await getDownloadURL(storageRef);
-          await setDoc(doc(db,'memories',id),{photo:url,photoName:fileName},{merge:true});
-        }catch(err2){alert('Erro ao salvar foto.');}
-      }
-    };
-    reader.readAsDataURL(file);
-  };
-  input.click();
-};
-
 onSnapshot(query(collection(db,'memories'),orderBy('date','asc')),snap=>{
   const el=document.getElementById('timeline-list');
   if(snap.empty){el.innerHTML='<div class="empty">Nenhuma memória registrada ainda.</div>';return;}
@@ -555,13 +507,6 @@ onSnapshot(query(collection(db,'memories'),orderBy('date','asc')),snap=>{
   el.innerHTML=`<div class="timeline-wrap">${snap.docs.map(d=>{
     const item={id:d.id,...d.data()};
     const dateStr=new Date(item.date+'T12:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
-    const photoName=item.photoName||'foto.jpg';
-    const photoHtml=item.photo
-      ? `<div style="margin-top:8px"><button class="timeline-photo-btn" style="gap:6px;display:inline-flex;align-items:center;" onclick="openPhotoViewer('${item.photo.replace(/'/g,"\\'")}','${photoName.replace(/'/g,"\\'")}')">🖼 ${photoName}</button></div>`
-      : '';
-    const addPhotoBtn=!item.photo
-      ? `<button class="timeline-photo-btn" onclick="attachPhoto('${item.id}')" style="margin-top:8px">📷 Vincular foto</button>`
-      : '';
     return`<div class="timeline-item">
       <div class="timeline-dot manual"></div>
       <div class="timeline-card">
@@ -569,8 +514,6 @@ onSnapshot(query(collection(db,'memories'),orderBy('date','asc')),snap=>{
         <div class="timeline-date">${dateStr}</div>
         <div class="timeline-title">${item.title}</div>
         ${item.desc?`<div class="timeline-desc">${item.desc}</div>`:''}
-        ${photoHtml}
-        ${addPhotoBtn}
       </div>
     </div>`;
   }).join('')}</div>`;
