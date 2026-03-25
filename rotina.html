@@ -240,13 +240,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <span id="lembrete-txt">—</span>
   </div>
 
-  <!-- QUEM ESTÁ REGISTRANDO -->
-  <div class="section-title" style="margin-top:4px">👤 Quem está registrando?</div>
-  <div class="autor-selector">
-    <button class="autor-btn" id="autor-pai" onclick="setAutor('papai')">💙 Papai</button>
-    <button class="autor-btn" id="autor-mae" onclick="setAutor('mamae')">💗 Mamãe</button>
-  </div>
-
   <!-- MAMADEIRA/PEITO -->
   <div class="section-title" style="margin-top:4px">🍼 Mamadeira / Amamentação</div>
   <div class="timer-card">
@@ -538,15 +531,6 @@ let currentFilter = 'todos';
 let peitoSelecionado = null;
 let autorAtual = null;
 let allEntries = [];
-
-// ==================
-// AUTOR
-// ==================
-window.setAutor = function(a) {
-  autorAtual = a;
-  document.getElementById('autor-pai').className = 'autor-btn' + (a === 'papai' ? ' sel-pai' : '');
-  document.getElementById('autor-mae').className = 'autor-btn' + (a === 'mamae' ? ' sel-mae' : '');
-};
 
 window.selectPeito = function(lado) {
   peitoSelecionado = lado;
