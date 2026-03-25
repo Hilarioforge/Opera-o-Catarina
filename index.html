@@ -114,7 +114,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div class="section-title">Dados pessoais</div>
   <div class="info-grid">
     <div class="info-card"><div class="ic-label">Nascimento</div><div class="ic-value">10/03/2026</div><div class="ic-sub">18h26 · Hospital da Luz</div></div>
-    <div class="info-card"><div class="ic-label">Sexo</div><div class="ic-value">Feminino 👧</div><div class="ic-sub">São Paulo — SP</div></div>
+    <div class="info-card"><div class="ic-label">Tipo Sanguíneo</div><div class="ic-value">O+ 🩸</div><div class="ic-sub">São Paulo — SP</div></div>
     <div class="info-card"><div class="ic-label">CPF</div><div class="ic-value" style="font-size:13px">163.461.148-91</div><div class="ic-sub">Emitido 11/03/2026</div></div>
     <div class="info-card"><div class="ic-label">Mãe</div><div class="ic-value" style="font-size:13px">Acsa Talita</div><div class="ic-sub">Almeida Brito</div></div>
     <div class="info-card"><div class="ic-label">Pai</div><div class="ic-value" style="font-size:13px">Thiago Hilario</div><div class="ic-sub">Brito Silva</div></div>
@@ -183,15 +183,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   </div>
 </div>
 
-<div class="section" style="margin-top:4px">
-  <div class="section-title">Observações & Memórias 💕</div>
-  <div class="card-full">
-    <textarea class="note-textarea" id="note-input" placeholder="Anote algo especial... primeiro sorriso, vacina, consulta, momento fofo 🌸"></textarea>
-    <button class="btn-pink" id="btn-note" onclick="saveNote()">Salvar observação</button>
-    <div id="notes-list" style="margin-top:10px"><div class="loading">Carregando...</div></div>
-  </div>
-</div>
-
 <div class="section" style="margin-top:16px">
   <div class="section-title">Vacinas 💉</div>
   <div class="card-full">
@@ -233,7 +224,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div class="section-title">Documentos</div>
   <div class="doc-item"><span class="doc-icon">📜</span><div><div class="doc-name">Certidão de Nascimento</div><div class="doc-sub">Matrícula: 122044 01 55 2026 1 00775 205 0399574 93</div><div class="doc-sub">9º Subdistrito Vila Mariana — São Paulo/SP · 11/03/2026</div></div></div>
   <div class="doc-item"><span class="doc-icon">🪪</span><div><div class="doc-name">CPF</div><div class="doc-sub">163.461.148-91</div></div></div>
-  <div class="doc-item"><span class="doc-icon">🩸</span><div><div class="doc-name">Tipo Sanguíneo</div><div class="doc-sub">O+</div></div></div>
 </div>
 
 <div class="section" style="margin-top:16px">
@@ -429,23 +419,6 @@ onSnapshot(query(collection(db,'notes'),orderBy('ts','desc')),snap=>{
   const el=document.getElementById('notes-list');
   if(snap.empty){el.innerHTML='';return;}
   el.innerHTML=snap.docs.map(d=>`<div class="note-item"><div class="note-date">${d.data().d}</div><div class="note-text">${d.data().t.replace(/\n/g,'<br>')}</div><button class="note-del" onclick="delNote('${d.id}')">✕</button></div>`).join('');
-});
-
-// VACINAS
-window.saveVacc = async function(){
-  const t=document.getElementById('vacc-input').value.trim();
-  if(!t)return;
-  const btn=document.getElementById('btn-vacc');
-  btn.disabled=true;btn.textContent='Salvando...';
-  try{await addDoc(collection(db,'vacc'),{t,d:new Date().toLocaleString('pt-BR'),ts:serverTimestamp()});document.getElementById('vacc-input').value='';}
-  catch(e){alert('Erro ao salvar.');}
-  btn.disabled=false;btn.textContent='Salvar registro';
-};
-window.delVacc = async function(id){if(!confirm('Apagar?'))return;await deleteDoc(doc(db,'vacc',id));};
-onSnapshot(query(collection(db,'vacc'),orderBy('ts','desc')),snap=>{
-  const el=document.getElementById('vacc-list');
-  if(snap.empty){el.innerHTML='<div class="empty">Nenhum registro ainda.</div>';return;}
-  el.innerHTML=snap.docs.map(d=>`<div class="note-item"><div class="note-date">${d.data().d}</div><div class="note-text">${d.data().t.replace(/\n/g,'<br>')}</div><button class="note-del" onclick="delVacc('${d.id}')">✕</button></div>`).join('');
 });
   
 // =====================
