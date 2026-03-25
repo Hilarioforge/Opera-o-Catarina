@@ -999,8 +999,7 @@ onSnapshot(query(collection(db, 'memories'), orderBy('ts', 'desc')), snap => {
       <div class="memory-item">
         <div class="memory-body">
           <div class="memory-title">${m.titulo}</div>
-          ${m.texto ? `<div class="memory-text">${m.texto.replace(/
-/g,'<br>')}</div>` : ''}
+          ${m.texto ? '<div class="memory-text">' + m.texto.split('\n').join('<br>') + '</div>' : ''}
           <div class="memory-meta">
             <span>📅 ${m.dataFmt || ''}</span>
             ${autorBadge}
