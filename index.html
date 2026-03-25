@@ -138,7 +138,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 <div class="hero">
   <span class="hero-emoji">🌸</span>
   <div class="hero-name">Catarina</div>
-  <div class="hero-sub">Catarina chegou em 10 de março de 2026, às 18h26, e desde aquele momento o mundo ficou mais bonito. Pequena, perfeita e nossa bem-vinda à vida, Meu Amor❤️ · São Paulo, SP</div>
+  <div class="hero-sub">Almeida Brito · São Paulo, SP</div>
   <div class="age-badge"><span>Ela tem</span><span id="age-txt">calculando...</span></div>
 </div>
 
@@ -202,22 +202,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 <div class="section" style="margin-top:16px">
   <div class="section-title">Vacinas</div>
   <div class="card-full">
-    <div class="form-title">💉 Calendário Vacinal SBP</div>
-    <div id="vacc-calendar"><div class="loading">Carregando...</div></div>
-  </div>
-</div>
-
-<!-- MODAL REGISTRAR VACINA -->
-<div class="modal-overlay" id="vacc-modal">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeVaccModal()">✕</button>
-    <div class="modal-title" id="modal-vacc-name">Registrar Vacina</div>
-    <input type="hidden" id="modal-vacc-key">
-    <div class="form-group" style="margin-bottom:10px"><label>Data de aplicação</label><input type="date" id="modal-vacc-date"></div>
-    <div class="form-group" style="margin-bottom:10px"><label>Local / Clínica</label><input type="text" id="modal-vacc-local" placeholder="Ex: UBS, Hospital da Luz..."></div>
-    <div class="form-group" style="margin-bottom:10px"><label>Lote (opcional)</label><input type="text" id="modal-vacc-lote" placeholder="Ex: A1234B"></div>
-    <div class="form-group" style="margin-bottom:16px"><label>Observações (opcional)</label><textarea id="modal-vacc-obs" style="resize:none;min-height:60px;" placeholder="Reações, observações..."></textarea></div>
-    <button class="btn-pink" onclick="confirmVacc()">✅ Confirmar aplicação</button>
+    <div class="form-title">💉 Registrar vacina</div>
+    <div class="form-row">
+      <div class="form-group"><label>Data</label><input type="date" id="v-date"></div>
+      <div class="form-group"><label>Vacina</label><input type="text" id="v-nome" placeholder="Ex: BCG, Pentavalente..."></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Local / Clínica</label><input type="text" id="v-local" placeholder="Ex: UBS, Hospital da Luz..."></div>
+      <div class="form-group"><label>Lote (opcional)</label><input type="text" id="v-lote" placeholder="Ex: A1234B"></div>
+    </div>
+    <div class="form-group" style="margin-bottom:10px"><label>Observações (opcional)</label><textarea id="v-obs" style="resize:none;min-height:50px;width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);font-size:14px;color:var(--text);font-family:inherit;outline:none;" placeholder="Reações, doses..."></textarea></div>
+    <button class="btn-pink" id="btn-vacc" onclick="saveVacc()">Salvar vacina</button>
+    <div style="font-size:13px;font-weight:600;color:var(--pink);margin:14px 0 6px">📋 Histórico</div>
+    <div id="vacc-list"><div class="loading">Carregando...</div></div>
   </div>
 </div>
 
@@ -293,11 +290,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   </div>
 </div>
 
-<p class="footer">Central da Catarina Almeida Brito 🌸<br>Nascida em 10 de março de 2026 · Desenvolvido Pelo Papai 💕</p>
+<p class="footer">Central da Catarina Almeida Brito 🌸<br>Nascida em 10 de março de 2026 · Desenvolvido com amor 💕</p>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-storage.js";
 
 const firebaseConfig = {
@@ -421,125 +418,53 @@ onSnapshot(query(collection(db,'consults'),orderBy('ts','desc')),snap=>{
 });
 
 // ── VACINAS ────────────────────────────────────────────────────────
-const SBP_CALENDAR = [
-  {age:'Ao nascer',vaccines:[
-    {key:'hepb_0',name:'Hepatite B',desc:'1ª dose — ao nascer'},
-    {key:'bcg',name:'BCG',desc:'Dose única — ao nascer'},
-  ]},
-  {age:'2 meses',vaccines:[
-    {key:'penta_1',name:'Pentavalente (DTP+Hib+HepB)',desc:'1ª dose'},
-    {key:'vip_1',name:'VIP (Poliomielite inativada)',desc:'1ª dose'},
-    {key:'pneumo10_1',name:'Pneumocócica 10v',desc:'1ª dose'},
-    {key:'rotav_1',name:'Rotavírus',desc:'1ª dose'},
-  ]},
-  {age:'4 meses',vaccines:[
-    {key:'penta_2',name:'Pentavalente (DTP+Hib+HepB)',desc:'2ª dose'},
-    {key:'vip_2',name:'VIP (Poliomielite inativada)',desc:'2ª dose'},
-    {key:'pneumo10_2',name:'Pneumocócica 10v',desc:'2ª dose'},
-    {key:'rotav_2',name:'Rotavírus',desc:'2ª dose'},
-  ]},
-  {age:'6 meses',vaccines:[
-    {key:'penta_3',name:'Pentavalente (DTP+Hib+HepB)',desc:'3ª dose'},
-    {key:'vip_3',name:'VIP (Poliomielite inativada)',desc:'3ª dose'},
-    {key:'influenza_1',name:'Influenza',desc:'1ª dose (semestral)'},
-  ]},
-  {age:'9 meses',vaccines:[
-    {key:'febre_amarela',name:'Febre Amarela',desc:'1ª dose'},
-    {key:'meningo_c1',name:'Meningocócica C',desc:'1ª dose'},
-  ]},
-  {age:'12 meses',vaccines:[
-    {key:'triplice_viral_1',name:'Tríplice Viral (SCR)',desc:'1ª dose'},
-    {key:'pneumo10_ref',name:'Pneumocócica 10v',desc:'Reforço'},
-    {key:'meningo_c_ref',name:'Meningocócica C',desc:'Reforço'},
-    {key:'varicela',name:'Varicela',desc:'Dose única'},
-  ]},
-  {age:'15 meses',vaccines:[
-    {key:'dtpa_ref1',name:'DTP (Reforço)',desc:'1º reforço'},
-    {key:'vop_ref',name:'VOP (Polio oral)',desc:'Reforço'},
-    {key:'hepatitea',name:'Hepatite A',desc:'Dose única'},
-    {key:'tetravalente',name:'Tetra Viral (SCRV)',desc:'Dose única'},
-  ]},
-];
-
-let vaccData = {};
-
-async function loadVaccCalendar(){
-  const ref2 = doc(db,'vacc_sbp','catarina');
-  const snap = await getDoc(ref2);
-  vaccData = snap.exists() ? (snap.data().vaccines||{}) : {};
-  renderVaccCalendar();
-}
-
-function renderVaccCalendar(){
-  const born = new Date('2026-03-10');
-  const now = new Date();
-  const html = SBP_CALENDAR.map(group=>{
-    const ageMonths = parseInt(group.age) || 0;
-    const dueDate = new Date(born);
-    dueDate.setMonth(dueDate.getMonth()+ageMonths);
-    const isPast = now > dueDate;
-    const vHtml = group.vaccines.map(v=>{
-      const applied = vaccData[v.key];
-      let statusDot,appliedHtml,actionHtml;
-      if(applied){
-        statusDot='done';
-        appliedHtml=`<div class="vacc-applied">✅ Aplicada em ${applied.date}${applied.local?' — '+applied.local:''}</div>`;
-        actionHtml=`<button class="vacc-btn-apply" style="background:none;border:1px solid var(--border);color:var(--muted);" onclick="openVaccModal('${v.key}','${v.name.replace(/'/g,"\\'")}')">✏️ Editar</button>`;
-      } else if(isPast && ageMonths>0){
-        statusDot='late';
-        appliedHtml='<div style="font-size:11px;color:#f59e0b;margin-top:4px;font-weight:600;">⚠️ Pendente — verificar com o pediatra</div>';
-        actionHtml=`<button class="vacc-btn-apply" onclick="openVaccModal('${v.key}','${v.name.replace(/'/g,"\\'")}')">Registrar</button>`;
-      } else {
-        statusDot='pending';
-        appliedHtml='';
-        actionHtml=`<button class="vacc-btn-apply" onclick="openVaccModal('${v.key}','${v.name.replace(/'/g,"\\'")}')">Registrar</button>`;
-      }
-      return`<div class="vacc-card">
-        <div class="vacc-status-dot ${statusDot}"></div>
-        <div class="vacc-info">
-          <div class="vacc-name">${v.name}</div>
-          <div class="vacc-desc">${v.desc}</div>
-          ${appliedHtml}
-          ${actionHtml}
-        </div>
-      </div>`;
-    }).join('');
-    return`<div class="vacc-section-label">💉 ${group.age}</div>${vHtml}`;
-  }).join('');
-  document.getElementById('vacc-calendar').innerHTML=html;
-}
-
-window.openVaccModal = function(key,name){
-  document.getElementById('modal-vacc-key').value=key;
-  document.getElementById('modal-vacc-name').textContent='💉 '+name;
-  const existing=vaccData[key]||{};
-  document.getElementById('modal-vacc-date').value=existing.date||'';
-  document.getElementById('modal-vacc-local').value=existing.local||'';
-  document.getElementById('modal-vacc-lote').value=existing.lote||'';
-  document.getElementById('modal-vacc-obs').value=existing.obs||'';
-  document.getElementById('vacc-modal').classList.add('open');
-};
-
-window.closeVaccModal = function(){
-  document.getElementById('vacc-modal').classList.remove('open');
-};
-
-window.confirmVacc = async function(){
-  const key=document.getElementById('modal-vacc-key').value;
-  const date=document.getElementById('modal-vacc-date').value;
-  const local=document.getElementById('modal-vacc-local').value.trim();
-  const lote=document.getElementById('modal-vacc-lote').value.trim();
-  const obs=document.getElementById('modal-vacc-obs').value.trim();
-  if(!date){alert('Informe a data de aplicação!');return;}
-  vaccData[key]={date,local,lote,obs};
+// ── VACINAS ────────────────────────────────────────────────────────
+window.saveVacc = async function(){
+  const date=document.getElementById('v-date').value;
+  const nome=document.getElementById('v-nome').value.trim();
+  const local=document.getElementById('v-local').value.trim();
+  const lote=document.getElementById('v-lote').value.trim();
+  const obs=document.getElementById('v-obs').value.trim();
+  if(!date||!nome){alert('Informe a data e o nome da vacina!');return;}
+  const btn=document.getElementById('btn-vacc');
+  btn.disabled=true;btn.textContent='Salvando...';
   try{
-    await setDoc(doc(db,'vacc_sbp','catarina'),{vaccines:vaccData,updated:serverTimestamp()});
-    renderVaccCalendar();
-    closeVaccModal();
-  }catch(e){alert('Erro ao salvar. Tente novamente.');}
+    await addDoc(collection(db,'vaccinations'),{date,nome,local,lote,obs,ts:serverTimestamp()});
+    document.getElementById('v-date').value='';
+    document.getElementById('v-nome').value='';
+    document.getElementById('v-local').value='';
+    document.getElementById('v-lote').value='';
+    document.getElementById('v-obs').value='';
+  }catch(e){alert('Erro ao salvar.');}
+  btn.disabled=false;btn.textContent='Salvar vacina';
 };
 
-loadVaccCalendar();
+window.deleteVacc = async function(id){
+  if(!confirm('Excluir este registro?'))return;
+  try{await deleteDoc(doc(db,'vaccinations',id));}
+  catch(e){alert('Erro ao excluir.');}
+};
+
+onSnapshot(query(collection(db,'vaccinations'),orderBy('ts','desc')),snap=>{
+  const el=document.getElementById('vacc-list');
+  if(snap.empty){el.innerHTML='<div class="empty">Nenhuma vacina registrada ainda.</div>';return;}
+  el.innerHTML=snap.docs.map(d=>{
+    const x=d.data();
+    const dateStr=x.date?new Date(x.date+'T12:00').toLocaleDateString('pt-BR'):'-';
+    return`<div class="consult-item">
+      <div class="consult-item-header">
+        <div>
+          <div class="consult-date-time">💉 ${dateStr}</div>
+          <div class="consult-doctor">${x.nome}</div>
+          ${x.local?`<div class="consult-local">📍 ${x.local}</div>`:''}
+          ${x.lote?`<div class="consult-local">Lote: ${x.lote}</div>`:''}
+          ${x.obs?`<div class="consult-local" style="font-style:italic">${x.obs}</div>`:''}
+        </div>
+        <button class="del-btn" onclick="deleteVacc('${d.id}')">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+});
 
 // ── CERTIDÃO ───────────────────────────────────────────────────────
 window.openCertidao = function(){
@@ -547,17 +472,6 @@ window.openCertidao = function(){
 };
 
 // ── LINHA DO TEMPO ─────────────────────────────────────────────────
-const AUTO_MILESTONES = [
-  {days:0,   title:'🌸 Nascimento',          desc:'Catarina chegou ao mundo! 10/03/2026 às 18h26 no Hospital da Luz.'},
-  {days:7,   title:'🎀 1 semana de vida',     desc:'Uma semana de amor e descobertas.'},
-  {days:30,  title:'🌙 1 mês',               desc:'Primeiro mês completinho!'},
-  {days:60,  title:'🌼 2 meses',             desc:'Dois meses de sorrisos e crescimento.'},
-  {days:90,  title:'🌻 3 meses',             desc:'Três meses de vida.'},
-  {days:180, title:'🎂 6 meses',             desc:'Metade do primeiro ano!'},
-  {days:365, title:'🎉 1 ano de vida',       desc:'Um ano de alegria, amor e memórias.'},
-  {days:730, title:'🎊 2 anos de vida',      desc:'Dois anos da nossa princesa!'},
-];
-
 window.saveMem = async function(){
   const date=document.getElementById('mem-date').value;
   const title=document.getElementById('mem-title').value.trim();
@@ -619,35 +533,24 @@ window.attachPhoto = function(id){
   input.click();
 };
 
-onSnapshot(query(collection(db,'memories'),orderBy('ts','asc')),snap=>{
+onSnapshot(query(collection(db,'memories'),orderBy('date','asc')),snap=>{
   const el=document.getElementById('timeline-list');
-  const born=new Date('2026-03-10');
-  const now=new Date();
+  if(snap.empty){el.innerHTML='<div class="empty">Nenhuma memória registrada ainda.</div>';return;}
 
-  const manuals=snap.docs.map(d=>({id:d.id,...d.data(),type:'manual'}));
-  const autos=AUTO_MILESTONES.map(m=>{
-    const mDate=new Date(born);mDate.setDate(born.getDate()+m.days);
-    return{...m,date:mDate.toISOString().slice(0,10),type:'auto',future:mDate>now};
-  });
-
-  const all=[...autos,...manuals].sort((a,b)=>a.date.localeCompare(b.date));
-  if(all.length===0){el.innerHTML='<div class="empty">Nenhuma memória ainda.</div>';return;}
-
-  el.innerHTML=`<div class="timeline-wrap">${all.map(item=>{
+  el.innerHTML=`<div class="timeline-wrap">${snap.docs.map(d=>{
+    const item={id:d.id,...d.data()};
     const dateStr=new Date(item.date+'T12:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
-    // Foto: mostra só o nome do arquivo como link clicável
     const photoName=item.photoName||'foto.jpg';
     const photoHtml=item.photo
       ? `<div style="margin-top:8px"><button class="timeline-photo-btn" style="gap:6px;display:inline-flex;align-items:center;" onclick="openPhotoViewer('${item.photo.replace(/'/g,"\\'")}','${photoName.replace(/'/g,"\\'")}')">🖼 ${photoName}</button></div>`
       : '';
-    const addPhotoBtn=item.id&&!item.photo
+    const addPhotoBtn=!item.photo
       ? `<button class="timeline-photo-btn" onclick="attachPhoto('${item.id}')" style="margin-top:8px">📷 Vincular foto</button>`
       : '';
-    const delBtn=item.id?`<button class="timeline-del" onclick="deleteMem('${item.id}')">🗑</button>`:'';
     return`<div class="timeline-item">
-      <div class="timeline-dot ${item.type==='auto'?'auto':'manual'} ${item.future?'future':''}"></div>
-      <div class="timeline-card ${item.future?'future':''}">
-        ${delBtn}
+      <div class="timeline-dot manual"></div>
+      <div class="timeline-card">
+        <button class="timeline-del" onclick="deleteMem('${item.id}')">🗑</button>
         <div class="timeline-date">${dateStr}</div>
         <div class="timeline-title">${item.title}</div>
         ${item.desc?`<div class="timeline-desc">${item.desc}</div>`:''}
