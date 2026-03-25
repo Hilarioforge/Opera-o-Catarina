@@ -119,6 +119,45 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   </div>
 </div>
 
+<div class="section" style="margin-top:16px">
+  <div class="section-title">Consultas</div>
+  <div class="card-full">
+    <div class="form-title">🩺 Registrar consulta</div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>Data</label>
+        <input type="date" id="c-date">
+      </div>
+      <div class="form-group">
+        <label>Horário</label>
+        <input type="time" id="c-time">
+      </div>
+    </div>
+ 
+    <div class="form-row">
+      <div class="form-group">
+        <label>Local</label>
+        <input type="text" id="c-local" placeholder="Ex: Hospital, clínica...">
+      </div>
+      <div class="form-group">
+        <label>Dr(a).</label>
+        <input type="text" id="c-doctor" placeholder="Nome do médico">
+      </div>
+    </div>
+ 
+    <button class="btn-pink" id="btn-consult" onclick="saveConsult()">Salvar consulta</button>
+ 
+    <div style="font-size:13px;font-weight:600;color:var(--pink);margin:14px 0 6px">
+      📋 Histórico
+    </div>
+ 
+    <div id="consult-list">
+      <div class="loading">Carregando...</div>
+    </div>
+  </div>
+</div>
+
 <div class="section" style="margin-top:4px">
   <div class="section-title">Documentos</div>
   <div class="doc-item"><span class="doc-icon">📜</span><div><div class="doc-name">Certidão de Nascimento</div><div class="doc-sub">Matrícula: 122044 01 55 2026 1 00775 205 0399574 93</div><div class="doc-sub">9º Subdistrito Vila Mariana — São Paulo/SP · 11/03/2026</div></div></div>
@@ -216,6 +255,46 @@ onSnapshot(query(collection(db,'growth'),orderBy('ts','desc')),snap=>{
   if(snap.empty){el.innerHTML='<div class="empty">Nenhuma medida registrada ainda.</div>';return;}
   el.innerHTML=`<table class="growth-table"><tr><th>Data</th><th>Peso</th><th>Altura</th><th>PC</th></tr>${snap.docs.map(d=>{const x=d.data();return`<tr><td>${x.d?new Date(x.d+'T12:00').toLocaleDateString('pt-BR'):'-'}</td><td>${x.p?x.p+'kg':'-'}</td><td>${x.a?x.a+'cm':'-'}</td><td>${x.pc?x.pc+'cm':'-'}</td></tr>`;}).join('')}</table>`;
 });
+
+// CONSULTAS
+window.saveConsult = async function(){
+  const date = document.getElementById('c-date').value;
+  const time = document.getElementById('c-time').value;
+  const local = document.getElementById('c-local').value.trim();
+  const doctor = document.getElementById('c-doctor').value.trim();
+ 
+  if(!date || !time || !local || !doctor){
+    alert('Preencha todos os campos!');
+    return;
+  }
+ 
+  const btn = document.getElementById('btn-consult');
+  btn.disabled = true;
+  btn.textContent = 'Salvando...';
+ 
+  try{
+    await addDoc(collection(db,'consults'),{
+      date,
+      time,
+      local,
+      doctor,
+      created: new Date().toLocaleString('pt-BR'),
+      ts: serverTimestamp()
+    });
+ 
+    // limpar campos
+    document.getElementById('c-date').value = '';
+    document.getElementById('c-time').value = '';
+    document.getElementById('c-local').value = '';
+    document.getElementById('c-doctor').value = '';
+ 
+  }catch(e){
+    alert('Erro ao salvar consulta.');
+  }
+ 
+  btn.disabled = false;
+  btn.textContent = 'Salvar consulta';
+};
 
 // OBSERVAÇÕES
 window.saveNote = async function(){
