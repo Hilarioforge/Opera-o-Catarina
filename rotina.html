@@ -528,8 +528,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-document.getElementById('sync-dot').className = 'sync-dot';
-document.getElementById('sync-txt').textContent = 'Conectado — dados em tempo real 🌸';
+const dot = document.getElementById('sync-dot');
+const txt = document.getElementById('sync-txt');
+
+if (dot) dot.className = 'sync-dot';
+if (txt) txt.textContent = 'Conectado — dados em tempo real 🌸';
 
 // ==================
 // DATA / STATE
