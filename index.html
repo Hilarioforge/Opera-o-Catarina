@@ -123,7 +123,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div class="form-group"><label>Perímetro cefálico (cm)</label><input type="number" id="g-pc" placeholder="ex: 34" step="0.1"></div>
     </div>
     <button class="btn-pink" id="btn-growth" onclick="saveGrowth()">Salvar medida</button>
-    <div style="font-size:13px;font-weight:600;color:var(--pink);margin:14px 0 6px">📈 Histórico</div>
+    <div style="font-size:13px;font-weight:600;color:var(--pink);margin:14px 0 6px">📈 Curva de peso</div>
+    <div id="growth-chart-wrap" style="display:none;margin-bottom:12px;">
+      <svg id="growth-svg" viewBox="0 0 300 120" style="width:100%;height:120px;" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+    <div style="font-size:13px;font-weight:600;color:var(--pink);margin:10px 0 6px">📋 Histórico</div>
     <div id="growth-list"><div class="loading">Carregando...</div></div>
   </div>
 </div>
@@ -222,10 +226,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 <p class="footer">Central da Catarina Almeida Brito 🌸<br>Nascida em 10 de março de 2026 · Desenvolvido Pelo Papai 💕</p>
 
-<!-- BOTÃO ROTINA FLUTUANTE -->
-<a href="rotina.html" style="position:fixed;bottom:20px;right:20px;background:linear-gradient(135deg,#ec4899,#f472b6);color:#fff;border-radius:50px;padding:14px 22px;font-size:14px;font-weight:700;text-decoration:none;box-shadow:0 6px 20px rgba(236,72,153,.4);display:flex;align-items:center;gap:8px;z-index:100;font-family:'DM Sans',sans-serif;">
-  🍼 <span>Rotina</span>
-</a>
+<!-- BOTTOM NAV -->
+<div style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #fad4e8;display:flex;padding:8px 0 env(safe-area-inset-bottom,8px);z-index:100;">
+  <a href="index.html" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;font-weight:600;color:#ec4899;text-decoration:none;padding:4px 0;">
+    <span style="font-size:22px;">🏠</span><span>Início</span>
+  </a>
+  <a href="rotina.html" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;font-weight:600;color:#b07090;text-decoration:none;padding:4px 0;">
+    <span style="font-size:22px;">🍼</span><span>Rotina</span>
+  </a>
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
@@ -282,10 +291,41 @@ window.saveGrowth = async function(){
   btn.disabled=false;btn.textContent='Salvar medida';
 };
 
-onSnapshot(query(collection(db,'growth'),orderBy('ts','desc')),snap=>{
+onSnapshot(query(collection(db,'growth'),orderBy('ts','asc')),snap=>{
   const el=document.getElementById('growth-list');
-  if(snap.empty){el.innerHTML='<div class="empty">Nenhuma medida registrada ainda.</div>';return;}
-  el.innerHTML=`<table class="growth-table"><tr><th>Data</th><th>Peso</th><th>Altura</th><th>PC</th></tr>${snap.docs.map(d=>{const x=d.data();return`<tr><td>${x.d?new Date(x.d+'T12:00').toLocaleDateString('pt-BR'):'-'}</td><td>${x.p?x.p+'kg':'-'}</td><td>${x.a?x.a+'cm':'-'}</td><td>${x.pc?x.pc+'cm':'-'}</td></tr>`;}).join('')}</table>`;
+  if(snap.empty){el.innerHTML='<div class="empty">Nenhuma medida registrada ainda.</div>';document.getElementById('growth-chart-wrap').style.display='none';return;}
+  
+  const docs = snap.docs.map(d=>d.data()).filter(x=>x.d&&x.p);
+  
+  // Gráfico SVG de peso
+  if(docs.length >= 2){
+    const wrap = document.getElementById('growth-chart-wrap');
+    const svg = document.getElementById('growth-svg');
+    wrap.style.display='block';
+    const W=300,H=110,PAD=30;
+    const pesos = docs.map(d=>parseFloat(d.p));
+    const minP=Math.min(...pesos), maxP=Math.max(...pesos);
+    const range=maxP-minP||0.5;
+    const pts = docs.map((d,i)=>{
+      const x=PAD+(i/(docs.length-1))*(W-PAD*2);
+      const y=H-PAD-((parseFloat(d.p)-minP)/range)*(H-PAD*2);
+      return {x,y,p:d.p,d:new Date(d.d+'T12:00').toLocaleDateString('pt-BR',{day:'numeric',month:'short'})};
+    });
+    const pathD=pts.map((p,i)=>(i===0?`M${p.x},${p.y}`:`L${p.x},${p.y}`)).join(' ');
+    const areaD=`M${pts[0].x},${H-PAD} `+pts.map(p=>`L${p.x},${p.y}`).join(' ')+` L${pts[pts.length-1].x},${H-PAD} Z`;
+    svg.innerHTML=`
+      <defs><linearGradient id="pg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ec4899" stop-opacity="0.25"/><stop offset="100%" stop-color="#ec4899" stop-opacity="0"/></linearGradient></defs>
+      <path d="${areaD}" fill="url(#pg)"/>
+      <path d="${pathD}" fill="none" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      ${pts.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="4" fill="#ec4899"/>`).join('')}
+      ${pts.map(p=>`<text x="${p.x}" y="${p.y-8}" text-anchor="middle" font-size="9" fill="#ec4899" font-weight="700">${p.p}kg</text>`).join('')}
+      ${pts.map(p=>`<text x="${p.x}" y="${H-8}" text-anchor="middle" font-size="8" fill="#b07090">${p.d}</text>`).join('')}
+    `;
+  }
+  
+  // tabela histórico (mais recente primeiro)
+  const docsDesc = snap.docs.map(d=>d.data()).reverse();
+  el.innerHTML=`<table class="growth-table"><tr><th>Data</th><th>Peso</th><th>Altura</th><th>PC</th></tr>${docsDesc.map(x=>`<tr><td>${x.d?new Date(x.d+'T12:00').toLocaleDateString('pt-BR'):'-'}</td><td>${x.p?x.p+'kg':'-'}</td><td>${x.a?x.a+'cm':'-'}</td><td>${x.pc?x.pc+'cm':'-'}</td></tr>`).join('')}</table>`;
 });
 
   // CONSULTAS
