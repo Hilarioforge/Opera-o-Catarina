@@ -653,6 +653,12 @@ updateDateHeader();
 // ==================
 function pad(n) { return String(n).padStart(2, '0'); }
 
+// Retorna a data local no formato YYYY-MM-DD (sem bug de fuso horário)
+function localDateKey(date) {
+  const d = date || new Date();
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+
 function formatDuration(seconds) {
   if (seconds < 3600) return `${pad(Math.floor(seconds/60))}:${pad(seconds%60)}`;
   return `${pad(Math.floor(seconds/3600))}:${pad(Math.floor((seconds%3600)/60))}:${pad(seconds%60)}`;
@@ -733,7 +739,7 @@ window.stopTimer = async function(type) {
   }
 
   const now = new Date();
-  const dateKey = now.toISOString().slice(0, 10);
+  const dateKey = localDateKey(now);
   const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
   // dados extras para soneca
@@ -773,7 +779,7 @@ window.stopTimer = async function(type) {
 // ==================
 window.registrarFralda = async function(tipo) {
   const now = new Date();
-  const dateKey = now.toISOString().slice(0, 10);
+  const dateKey = localDateKey(now);
   const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
   const labels = { xixi: '💧 Xixi', coco: '💩 Cocô', mista: '🔀 Mista' };
   try {
@@ -968,7 +974,7 @@ function entryBadgeClass(tipo) {
 // TODAY
 // ==================
 function renderToday(entries) {
-  const todayKey = new Date().toISOString().slice(0, 10);
+  const todayKey = localDateKey();
   const todayEntries = entries.filter(e => e.dateKey === todayKey);
 
   // stats
@@ -1035,8 +1041,8 @@ function renderHistory(entries) {
 
     const dateLabel = (() => {
       const [y, m, d] = day.split('-');
-      const today = new Date().toISOString().slice(0, 10);
-      const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+      const today = localDateKey();
+      const yesterday = localDateKey(new Date(Date.now()-86400000));
       if (day === today) return 'Hoje';
       if (day === yesterday) return 'Ontem';
       return new Date(day + 'T12:00').toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
@@ -1062,7 +1068,7 @@ function renderHistory(entries) {
       </div>
     `).join('');
 
-    const isToday = day === new Date().toISOString().slice(0,10);
+    const isToday = day === localDateKey();
     const openClass = isToday ? 'open' : '';
     const dayId = 'day-' + day.replace(/-/g,'');
 
@@ -1117,7 +1123,7 @@ onSnapshot(query(collection(db, 'vaccinations'), orderBy('ts', 'asc')), snap => 
   const el = document.getElementById('vacc-new-list');
   if (!el) return;
   if (snap.empty) { el.innerHTML = '<div class="empty">Nenhuma vacina registrada ainda 💉</div>'; return; }
-  const today = new Date().toISOString().slice(0,10);
+  const today = localDateKey();
   el.innerHTML = snap.docs.map(d => {
     const v = d.data();
     const dataFmt = v.data ? new Date(v.data+'T12:00').toLocaleDateString('pt-BR') : '—';
@@ -1221,7 +1227,7 @@ function renderMedias(entries) {
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(d.getDate() - i);
-    dayKeys.push(d.toISOString().slice(0, 10));
+    dayKeys.push(localDateKey(d));
   }
 
   // agrupa entradas por dia
@@ -1263,7 +1269,7 @@ function renderMedias(entries) {
   // labels abreviados
   const labels = dayKeys.map(k => {
     const d = new Date(k + 'T12:00');
-    const today2 = new Date().toISOString().slice(0,10);
+    const today2 = localDateKey();
     if (k === today2) return 'Hoje';
     return d.toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric' }).replace('.','');
   });
