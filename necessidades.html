@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Catarina">
+<meta name="theme-color" content="#fce7f3">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>Necessidades — Catarina 🌸</title>
+<style>
+:root{
+  --bg:#fff5f9;--surface:#ffffff;--surface2:#fce7f3;--border:#fad4e8;
+  --text:#3b1a2e;--muted:#b07090;--pink:#ec4899;--pink-mid:#f9a8d4;
+  --pink-light:#fce7f3;--green:#10b981;--green-bg:#d1fae5;
+  --blue:#6366f1;--blue-bg:#eef2ff;--amber:#f59e0b;--amber-bg:#fef3c7;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:90px;}
+
+.hero{background:linear-gradient(160deg,#fce7f3 0%,#fff0f6 100%);padding:28px 20px 22px;text-align:center;border-bottom:1px solid var(--border);}
+.hero-back{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);text-decoration:none;margin-bottom:14px;padding:6px 14px;background:#fff;border:1px solid var(--border);border-radius:20px;}
+.hero-back:active{opacity:.75;}
+.hero-emoji{font-size:44px;display:block;margin-bottom:8px;animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.hero-title{font-family:'Playfair Display',serif;font-size:26px;color:var(--text);}
+.hero-sub{font-size:12px;color:var(--muted);margin-top:4px;}
+
+.sync-bar{background:#fff;border-bottom:1px solid var(--border);padding:7px 16px;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#10b981;flex-shrink:0;}
+
+.tab-bar{display:flex;background:#fff;border-bottom:2px solid var(--border);position:sticky;top:0;z-index:10;}
+.tab-btn{flex:1;padding:10px 4px;font-size:10px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;font-family:inherit;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;}
+.tab-btn.active{color:var(--pink);border-bottom-color:var(--pink);}
+.tab-btn span{display:block;font-size:16px;margin-bottom:1px;}
+
+.panel{display:none;padding:16px;}
+.panel.active{display:block;}
+
+.section-title{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;}
+
+/* ADD FORM */
+.add-card{background:var(--surface);border:1.5px solid var(--border);border-radius:18px;padding:18px;margin-bottom:16px;}
+.add-row{display:flex;gap:10px;margin-bottom:10px;align-items:flex-end;}
+.add-field{flex:1;}
+.add-field label{font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;}
+.add-field input,.add-field select,.add-field textarea{width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);font-size:14px;color:var(--text);font-family:inherit;outline:none;}
+.add-field input:focus,.add-field select:focus,.add-field textarea:focus{border-color:var(--pink-mid);}
+.add-field select{appearance:none;-webkit-appearance:none;}
+.btn-pink{width:100%;padding:12px;background:linear-gradient(135deg,#ec4899,#f472b6);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 4px 12px rgba(236,72,153,.25);}
+.btn-pink:active{opacity:.85;}
+.btn-pink:disabled{opacity:.6;cursor:not-allowed;}
+
+/* CATEGORY BADGE */
+.cat-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:6px;}
+.cat-fralda{background:#fce7f3;color:var(--pink);}
+.cat-alimentacao{background:#d1fae5;color:#065f46;}
+.cat-roupas{background:#eef2ff;color:var(--blue);}
+.cat-higiene{background:#fef3c7;color:#92400e;}
+.cat-saude{background:#fee2e2;color:#b91c1c;}
+.cat-brinquedo{background:#f3e8ff;color:#7c3aed;}
+.cat-outro{background:#f3f4f6;color:#4b5563;}
+
+/* ITENS */
+.item-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px;transition:all .2s;}
+.item-card.done{opacity:.55;border-color:#e5e7eb;}
+.item-check-wrap{padding-top:2px;}
+.item-check{width:22px;height:22px;border-radius:8px;border:2px solid var(--border);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;transition:all .15s;}
+.item-check.checked{background:var(--green);border-color:var(--green);color:#fff;}
+.item-check:active{transform:scale(.9);}
+.item-body{flex:1;}
+.item-name{font-size:14px;font-weight:600;color:var(--text);}
+.item-card.done .item-name{text-decoration:line-through;color:var(--muted);}
+.item-meta{font-size:11px;color:var(--muted);margin-top:3px;}
+.item-note{font-size:12px;color:var(--muted);margin-top:4px;font-style:italic;}
+.item-prio{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-top:4px;}
+.prio-urgente{background:#fee2e2;color:#b91c1c;}
+.prio-normal{background:#fef3c7;color:#92400e;}
+.prio-baixa{background:#f3f4f6;color:#4b5563;}
+.item-actions{display:flex;flex-direction:column;gap:4px;flex-shrink:0;}
+.item-del{background:none;border:none;font-size:13px;color:var(--muted);cursor:pointer;padding:4px 6px;border-radius:6px;}
+.item-del:active{background:var(--surface2);}
+
+/* STATS BAR */
+.stats-bar{display:flex;gap:10px;margin-bottom:16px;}
+.sbar-card{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:12px;text-align:center;}
+.sbar-val{font-size:22px;font-weight:700;color:var(--text);}
+.sbar-lbl{font-size:10px;color:var(--muted);margin-top:2px;}
+
+/* FILTER */
+.filter-bar{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px;}
+.filter-btn{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;white-space:nowrap;font-family:inherit;}
+.filter-btn.active{background:var(--pink);color:#fff;border-color:var(--pink);}
+
+.empty{text-align:center;font-size:13px;color:var(--muted);padding:24px 0;}
+.loading{text-align:center;padding:16px;color:var(--muted);font-size:13px;}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);display:flex;padding:8px 0 env(safe-area-inset-bottom,8px);z-index:100;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;font-weight:600;color:var(--muted);text-decoration:none;padding:4px 0;}
+.nav-item.active{color:var(--pink);}
+.nav-item span:first-child{font-size:22px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:#fff;padding:10px 22px;border-radius:30px;font-size:13px;font-weight:500;opacity:0;transition:all .3s;z-index:200;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* PROGRESSO */
+.progress-wrap{background:#f3f4f6;border-radius:20px;height:8px;margin-bottom:4px;overflow:hidden;}
+.progress-bar{height:100%;background:linear-gradient(90deg,#ec4899,#f472b6);border-radius:20px;transition:width .4s ease;}
+.progress-label{font-size:11px;color:var(--muted);text-align:right;}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <a href="index.html" class="hero-back">← Voltar para o início</a>
+  <span class="hero-emoji">🛒</span>
+  <div class="hero-title">Necessidades da Catarina</div>
+  <div class="hero-sub">Lista de compras, tarefas e o que precisa providenciar</div>
+</div>
+
+<div class="sync-bar">
+  <div class="sync-dot" id="sync-dot"></div>
+  <span id="sync-txt">Conectando...</span>
+</div>
+
+<!-- TABS -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('lista')" id="tab-lista">
+    <span>📋</span>Lista
+  </button>
+  <button class="tab-btn" onclick="switchTab('adicionar')" id="tab-adicionar">
+    <span>➕</span>Adicionar
+  </button>
+  <button class="tab-btn" onclick="switchTab('concluidos')" id="tab-concluidos">
+    <span>✅</span>Concluídos
+  </button>
+</div>
+
+<!-- PANEL: LISTA -->
+<div class="panel active" id="panel-lista">
+
+  <!-- PROGRESSO -->
+  <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:16px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <span style="font-size:13px;font-weight:600;">Progresso geral</span>
+      <span style="font-size:13px;color:var(--pink);font-weight:700;" id="progress-pct">0%</span>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+    <div style="display:flex;justify-content:space-between;margin-top:6px;">
+      <span style="font-size:11px;color:var(--muted);" id="progress-done">0 concluídos</span>
+      <span style="font-size:11px;color:var(--muted);" id="progress-total">0 total</span>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="sbar-card">
+      <div class="sbar-val" id="stat-pendentes">0</div>
+      <div class="sbar-lbl">Pendentes</div>
+    </div>
+    <div class="sbar-card" style="border-color:#fde68a;">
+      <div class="sbar-val" style="color:var(--amber);" id="stat-urgentes">0</div>
+      <div class="sbar-lbl">Urgentes</div>
+    </div>
+    <div class="sbar-card" style="border-color:#6ee7b7;">
+      <div class="sbar-val" style="color:var(--green);" id="stat-concluidos">0</div>
+      <div class="sbar-lbl">Feitos</div>
+    </div>
+  </div>
+
+  <!-- FILTROS -->
+  <div class="filter-bar" id="filter-bar">
+    <button class="filter-btn active" onclick="setFilter('todos')" id="filter-todos">Todos</button>
+    <button class="filter-btn" onclick="setFilter('urgente')" id="filter-urgente">🔴 Urgente</button>
+    <button class="filter-btn" onclick="setFilter('fralda')" id="filter-fralda">🍼 Fralda</button>
+    <button class="filter-btn" onclick="setFilter('alimentacao')" id="filter-alimentacao">🍼 Alimentação</button>
+    <button class="filter-btn" onclick="setFilter('roupas')" id="filter-roupas">👕 Roupas</button>
+    <button class="filter-btn" onclick="setFilter('higiene')" id="filter-higiene">🛁 Higiene</button>
+    <button class="filter-btn" onclick="setFilter('saude')" id="filter-saude">🏥 Saúde</button>
+    <button class="filter-btn" onclick="setFilter('brinquedo')" id="filter-brinquedo">🧸 Brinquedo</button>
+    <button class="filter-btn" onclick="setFilter('outro')" id="filter-outro">📦 Outro</button>
+  </div>
+
+  <div id="list-pendentes"><div class="loading">Carregando...</div></div>
+</div>
+
+<!-- PANEL: ADICIONAR -->
+<div class="panel" id="panel-adicionar">
+  <div class="add-card">
+    <div class="section-title" style="margin-bottom:14px;">➕ Novo item</div>
+
+    <div class="add-field" style="margin-bottom:10px;">
+      <label>Nome do item *</label>
+      <input type="text" id="new-nome" placeholder="Ex: Fraldas RN, Pomada Bepantol...">
+    </div>
+
+    <div class="add-row">
+      <div class="add-field">
+        <label>Categoria</label>
+        <select id="new-cat">
+          <option value="outro">📦 Outro</option>
+          <option value="fralda">🍼 Fralda / Higiene íntima</option>
+          <option value="alimentacao">🥛 Alimentação</option>
+          <option value="roupas">👕 Roupas</option>
+          <option value="higiene">🛁 Higiene</option>
+          <option value="saude">🏥 Saúde / Remédio</option>
+          <option value="brinquedo">🧸 Brinquedo</option>
+        </select>
+      </div>
+      <div class="add-field">
+        <label>Prioridade</label>
+        <select id="new-prio">
+          <option value="normal">🟡 Normal</option>
+          <option value="urgente">🔴 Urgente</option>
+          <option value="baixa">⚪ Baixa</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="add-field" style="margin-bottom:10px;">
+      <label>Quantidade / Tamanho (opcional)</label>
+      <input type="text" id="new-qtd" placeholder="Ex: 2 pacotes, tamanho M...">
+    </div>
+
+    <div class="add-field" style="margin-bottom:14px;">
+      <label>Observação (opcional)</label>
+      <input type="text" id="new-obs" placeholder="Ex: marca preferida, onde comprar...">
+    </div>
+
+    <button class="btn-pink" id="btn-add" onclick="addItem()">➕ Adicionar à lista</button>
+  </div>
+</div>
+
+<!-- PANEL: CONCLUÍDOS -->
+<div class="panel" id="panel-concluidos">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+    <span style="font-size:13px;font-weight:600;color:var(--muted);">Itens já providenciados ✅</span>
+    <button onclick="limparConcluidos()" style="font-size:11px;padding:5px 12px;background:#fff;color:var(--muted);border:1.5px solid var(--border);border-radius:10px;cursor:pointer;font-family:inherit;">🗑 Limpar</button>
+  </div>
+  <div id="list-concluidos"><div class="loading">Carregando...</div></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <a href="index.html" class="nav-item">
+    <span>🏠</span>
+    <span>Início</span>
+  </a>
+  <a href="rotina.html" class="nav-item">
+    <span>🍼</span>
+    <span>Rotina</span>
+  </a>
+  <a href="necessidades.html" class="nav-item active">
+    <span>🛒</span>
+    <span>Lista</span>
+  </a>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+import { getFirestore, collection, addDoc, deleteDoc, doc, updateDoc, onSnapshot, query, orderBy, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCrVxYju5nYLYyXaczK76znjqVQmnWwMnM",
+  authDomain: "operacaocatarina.firebaseapp.com",
+  projectId: "operacaocatarina",
+  storageBucket: "operacaocatarina.firebasestorage.app",
+  messagingSenderId: "833161287638",
+  appId: "1:833161287638:web:7915602c944d5319793677"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+document.getElementById('sync-dot').className = 'sync-dot';
+document.getElementById('sync-txt').textContent = 'Conectado — dados em tempo real 🌸';
+
+let allItems = [];
+let currentFilter = 'todos';
+
+// ==================
+// TABS
+// ==================
+window.switchTab = function(tab) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + tab).classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+};
+
+// ==================
+// FILTER
+// ==================
+window.setFilter = function(f) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('filter-' + f);
+  if (btn) btn.classList.add('active');
+  renderLists(allItems);
+};
+
+// ==================
+// CATEGORIAS
+// ==================
+const catIcons = {
+  fralda: '🍼', alimentacao: '🥛', roupas: '👕',
+  higiene: '🛁', saude: '🏥', brinquedo: '🧸', outro: '📦'
+};
+const catLabels = {
+  fralda: 'Fralda', alimentacao: 'Alimentação', roupas: 'Roupas',
+  higiene: 'Higiene', saude: 'Saúde', brinquedo: 'Brinquedo', outro: 'Outro'
+};
+const prioLabels = { urgente: '🔴 Urgente', normal: '🟡 Normal', baixa: '⚪ Baixa' };
+const prioClass  = { urgente: 'prio-urgente', normal: 'prio-normal', baixa: 'prio-baixa' };
+
+// ==================
+// RENDER
+// ==================
+function renderLists(items) {
+  const pendentes  = items.filter(i => !i.done);
+  const concluidos = items.filter(i => i.done);
+
+  // stats
+  const urgentes = pendentes.filter(i => i.prioridade === 'urgente').length;
+  document.getElementById('stat-pendentes').textContent  = pendentes.length;
+  document.getElementById('stat-urgentes').textContent   = urgentes;
+  document.getElementById('stat-concluidos').textContent = concluidos.length;
+
+  // progresso
+  const total = items.length;
+  const done  = concluidos.length;
+  const pct   = total > 0 ? Math.round((done / total) * 100) : 0;
+  document.getElementById('progress-pct').textContent  = pct + '%';
+  document.getElementById('progress-bar').style.width  = pct + '%';
+  document.getElementById('progress-done').textContent = done + ' concluídos';
+  document.getElementById('progress-total').textContent = total + ' total';
+
+  // filtra pendentes
+  let filtered = pendentes;
+  if (currentFilter === 'urgente') {
+    filtered = pendentes.filter(i => i.prioridade === 'urgente');
+  } else if (currentFilter !== 'todos') {
+    filtered = pendentes.filter(i => i.categoria === currentFilter);
+  }
+
+  // ordena: urgente primeiro, depois por data
+  filtered.sort((a, b) => {
+    if (a.prioridade === 'urgente' && b.prioridade !== 'urgente') return -1;
+    if (b.prioridade === 'urgente' && a.prioridade !== 'urgente') return 1;
+    return (b.ts?.seconds || 0) - (a.ts?.seconds || 0);
+  });
+
+  const elPend = document.getElementById('list-pendentes');
+  if (filtered.length === 0) {
+    elPend.innerHTML = currentFilter === 'todos'
+      ? '<div class="empty">Nenhum item pendente! Tudo em dia 🌸</div>'
+      : '<div class="empty">Nenhum item nessa categoria 🌸</div>';
+  } else {
+    elPend.innerHTML = filtered.map(i => renderItem(i, false)).join('');
+  }
+
+  // concluídos
+  const elConc = document.getElementById('list-concluidos');
+  if (concluidos.length === 0) {
+    elConc.innerHTML = '<div class="empty">Nenhum item concluído ainda 🌸</div>';
+  } else {
+    elConc.innerHTML = concluidos
+      .sort((a, b) => (b.doneAt?.seconds || 0) - (a.doneAt?.seconds || 0))
+      .map(i => renderItem(i, true)).join('');
+  }
+}
+
+function renderItem(i, isDone) {
+  const icon  = catIcons[i.categoria] || '📦';
+  const label = catLabels[i.categoria] || 'Outro';
+  const dateStr = i.ts ? new Date(i.ts.seconds * 1000).toLocaleDateString('pt-BR') : '';
+  return `
+    <div class="item-card ${isDone ? 'done' : ''}">
+      <div class="item-check-wrap">
+        <div class="item-check ${isDone ? 'checked' : ''}" onclick="toggleItem('${i._id}', ${isDone})">
+          ${isDone ? '✓' : ''}
+        </div>
+      </div>
+      <div class="item-body">
+        <div class="item-name">${i.nome}</div>
+        <div class="item-meta">${icon} ${label}${i.qtd ? ' · ' + i.qtd : ''}${dateStr ? ' · ' + dateStr : ''}</div>
+        ${i.obs ? `<div class="item-note">${i.obs}</div>` : ''}
+        ${!isDone && i.prioridade && i.prioridade !== 'normal' ? `<span class="item-prio ${prioClass[i.prioridade]}">${prioLabels[i.prioridade]}</span>` : ''}
+      </div>
+      <div class="item-actions">
+        <button class="item-del" onclick="delItem('${i._id}')">✕</button>
+      </div>
+    </div>
+  `;
+}
+
+// ==================
+// ADICIONAR
+// ==================
+window.addItem = async function() {
+  const nome = document.getElementById('new-nome').value.trim();
+  if (!nome) { alert('Informe o nome do item!'); return; }
+  const cat  = document.getElementById('new-cat').value;
+  const prio = document.getElementById('new-prio').value;
+  const qtd  = document.getElementById('new-qtd').value.trim();
+  const obs  = document.getElementById('new-obs').value.trim();
+
+  const btn = document.getElementById('btn-add');
+  btn.disabled = true; btn.textContent = 'Salvando...';
+
+  try {
+    await addDoc(collection(db, 'necessidades'), {
+      nome, categoria: cat, prioridade: prio, qtd, obs,
+      done: false, ts: serverTimestamp()
+    });
+    document.getElementById('new-nome').value = '';
+    document.getElementById('new-qtd').value = '';
+    document.getElementById('new-obs').value = '';
+    document.getElementById('new-cat').value = 'outro';
+    document.getElementById('new-prio').value = 'normal';
+    showToast('✅ Item adicionado!');
+    switchTab('lista');
+  } catch(e) { alert('Erro ao salvar.'); }
+
+  btn.disabled = false; btn.textContent = '➕ Adicionar à lista';
+};
+
+// ==================
+// TOGGLE CONCLUÍDO
+// ==================
+window.toggleItem = async function(id, isDone) {
+  try {
+    await updateDoc(doc(db, 'necessidades', id), {
+      done: !isDone,
+      doneAt: !isDone ? serverTimestamp() : null
+    });
+    showToast(!isDone ? '✅ Item concluído!' : '↩️ Item reaberto!');
+  } catch(e) { alert('Erro ao atualizar.'); }
+};
+
+// ==================
+// DELETAR
+// ==================
+window.delItem = async function(id) {
+  if (!confirm('Apagar este item?')) return;
+  await deleteDoc(doc(db, 'necessidades', id));
+};
+
+// ==================
+// LIMPAR CONCLUÍDOS
+// ==================
+window.limparConcluidos = async function() {
+  const concluidos = allItems.filter(i => i.done);
+  if (concluidos.length === 0) { showToast('Nada para limpar!'); return; }
+  if (!confirm(`Apagar ${concluidos.length} item(s) concluído(s)?`)) return;
+  for (const i of concluidos) {
+    await deleteDoc(doc(db, 'necessidades', i._id));
+  }
+  showToast('🗑 Concluídos apagados!');
+};
+
+// ==================
+// TOAST
+// ==================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ==================
+// REALTIME
+// ==================
+onSnapshot(query(collection(db, 'necessidades'), orderBy('ts', 'desc')), snap => {
+  allItems = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+  renderLists(allItems);
+});
+</script>
+</body>
+</html>

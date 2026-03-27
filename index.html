@@ -296,6 +296,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <span>🍼</span>
     <span>Rotina</span>
   </a>
+  <a href="necessidades.html" class="nav-item">
+    <span>🛒</span>
+    <span>Lista</span>
+  </a>
 </div>
 
 <script type="module">
@@ -474,7 +478,17 @@ onSnapshot(query(collection(db,'vaccinations'),orderBy('ts','desc')),snap=>{
 
 // ── CERTIDÃO ───────────────────────────────────────────────────────
 window.openCertidao = function(){
-  window.open('https://certidao.registrocivil.org.br/validar','_blank');
+  // Abre o PDF da certidão que está na pasta do projeto
+  const pdfUrl = 'certidao.pdf';
+  // Tenta abrir em nova aba
+  const win = window.open(pdfUrl, '_blank');
+  if (!win) {
+    // Se bloqueado pelo navegador, faz download
+    const a = document.createElement('a');
+    a.href = pdfUrl;
+    a.download = 'Certidao-Nascimento-Catarina.pdf';
+    a.click();
+  }
 };
 
 // ── LINHA DO TEMPO ─────────────────────────────────────────────────

@@ -190,7 +190,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .memory-del{background:none;border:none;font-size:13px;color:var(--muted);cursor:pointer;margin-left:auto;}
 
 
-/* CHARTS */
+/* MODAL EDIÇÃO */
+.edit-modal-overlay{display:none;position:fixed;inset:0;background:rgba(59,26,46,.5);z-index:500;align-items:flex-end;justify-content:center;}
+.edit-modal-overlay.open{display:flex;}
+.edit-modal-box{background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 40px;width:100%;max-width:480px;animation:slideUp .25s ease;}
+@keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
+.edit-modal-title{font-size:15px;font-weight:700;color:var(--pink);margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+.edit-modal-close{background:none;border:none;font-size:20px;color:var(--muted);cursor:pointer;}
+.edit-field{margin-bottom:12px;}
+.edit-field label{font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;}
+.edit-field input,.edit-field select{width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);font-size:14px;color:var(--text);font-family:inherit;outline:none;}
+.edit-field input:focus{border-color:var(--pink-mid);}
+.edit-btns{display:flex;gap:10px;margin-top:16px;}
+.btn-edit-save{flex:1;padding:12px;background:linear-gradient(135deg,#ec4899,#f472b6);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;}
+.btn-edit-cancel{flex:1;padding:12px;background:#fff;color:var(--muted);border:1.5px solid var(--border);border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;}
+.history-edit{background:none;border:none;font-size:13px;color:var(--blue);cursor:pointer;padding:4px 8px;border-radius:6px;margin-right:2px;}
+.history-edit:active{background:var(--blue-bg);}
 .bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;}
 .bar{width:100%;border-radius:6px 6px 0 0;min-height:4px;transition:height .4s ease;}
 .bar-val{font-size:10px;font-weight:700;color:var(--text);}
@@ -486,6 +501,21 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 </div>
 
+<!-- MODAL EDIÇÃO DE REGISTRO -->
+<div class="edit-modal-overlay" id="edit-modal-overlay">
+  <div class="edit-modal-box">
+    <div class="edit-modal-title">
+      <span id="edit-modal-titulo">✏️ Editar registro</span>
+      <button class="edit-modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <div id="edit-modal-fields"></div>
+    <div class="edit-btns">
+      <button class="btn-edit-cancel" onclick="closeEditModal()">Cancelar</button>
+      <button class="btn-edit-save" onclick="saveEditModal()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
@@ -498,6 +528,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <a href="rotina.html" class="nav-item active">
     <span>🍼</span>
     <span>Rotina</span>
+  </a>
+  <a href="necessidades.html" class="nav-item">
+    <span>🛒</span>
+    <span>Lista</span>
   </a>
 </div>
 
@@ -527,6 +561,24 @@ const timers = {
   mama: { running: false, startTime: null, interval: null },
   sono: { running: false, startTime: null, interval: null }
 };
+
+// ==================
+// TIMER PERSISTENTE (localStorage)
+// ==================
+function timerSave(type, startMs) {
+  localStorage.setItem(`timer_${type}_start`, String(startMs));
+  localStorage.setItem(`timer_${type}_active`, 'true');
+}
+function timerClear(type) {
+  localStorage.removeItem(`timer_${type}_start`);
+  localStorage.removeItem(`timer_${type}_active`);
+}
+function timerLoad(type) {
+  const active = localStorage.getItem(`timer_${type}_active`);
+  const start  = localStorage.getItem(`timer_${type}_start`);
+  if (active === 'true' && start) return parseInt(start);
+  return null;
+}
 
 let currentFilter = 'todos';
 let peitoSelecionado = null;
@@ -615,27 +667,45 @@ function formatDurationLabel(seconds) {
   return `${s}s`;
 }
 
-window.startTimer = function(type) {
+function activateTimerUI(type, startMs) {
   const t = timers[type];
-  if (t.running) return;
   t.running = true;
-  t.startTime = Date.now();
-  t.startDate = new Date();
+  t.startTime = startMs;
+  t.startDate = new Date(startMs);
   document.getElementById(`${type}-start-btn`).classList.add('hidden');
   document.getElementById(`${type}-stop-btn`).classList.remove('hidden');
   const display = document.getElementById(`${type}-display`);
   display.classList.add('running');
-  // mostrar horário de início para soneca
   if (type === 'sono') {
     const hStr = t.startDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     document.getElementById('sono-inicio-str').textContent = hStr;
     document.getElementById('sono-inicio-label').style.display = 'block';
   }
+  clearInterval(t.interval);
   t.interval = setInterval(() => {
     const elapsed = Math.floor((Date.now() - t.startTime) / 1000);
     display.textContent = formatDuration(elapsed);
   }, 1000);
+}
+
+window.startTimer = function(type) {
+  const t = timers[type];
+  if (t.running) return;
+  const startMs = Date.now();
+  timerSave(type, startMs);
+  activateTimerUI(type, startMs);
 };
+
+// Recupera timers ativos ao abrir o app
+function restoreTimers() {
+  ['mama', 'sono'].forEach(type => {
+    const startMs = timerLoad(type);
+    if (startMs !== null) {
+      activateTimerUI(type, startMs);
+    }
+  });
+}
+restoreTimers();
 
 window.stopTimer = async function(type) {
   const t = timers[type];
@@ -643,6 +713,7 @@ window.stopTimer = async function(type) {
   clearInterval(t.interval);
   const duration = Math.floor((Date.now() - t.startTime) / 1000);
   t.running = false;
+  timerClear(type);
   document.getElementById(`${type}-start-btn`).classList.remove('hidden');
   document.getElementById(`${type}-stop-btn`).classList.add('hidden');
   const display = document.getElementById(`${type}-display`);
@@ -712,6 +783,111 @@ window.registrarFralda = async function(tipo) {
     showToast(`🩲 Fralda registrada — ${labels[tipo]}`);
   } catch(e) {
     alert('Erro ao salvar.');
+  }
+};
+
+// ==================
+// EDIÇÃO DE REGISTROS
+// ==================
+let editingEntry = null;
+
+window.openEditModal = function(id) {
+  const e = allEntries.find(x => x._id === id);
+  if (!e) return;
+  editingEntry = e;
+
+  const tituloMap = { mama: '🍼 Editar Mamada', sono: '😴 Editar Soneca', fralda: '🩲 Editar Fralda' };
+  document.getElementById('edit-modal-titulo').textContent = tituloMap[e.tipo] || '✏️ Editar';
+
+  let fields = '';
+
+  // Horário
+  const timeVal = e.timeStr ? e.timeStr : '';
+  fields += `<div class="edit-field"><label>Horário (fim)</label><input type="time" id="ef-time" value="${timeVal}"></div>`;
+
+  // Data
+  const dateVal = e.dateKey || '';
+  fields += `<div class="edit-field"><label>Data</label><input type="date" id="ef-date" value="${dateVal}"></div>`;
+
+  if (e.tipo === 'mama' || e.tipo === 'sono') {
+    // Horário de início (para calcular duração)
+    const startTimeVal = e.startTimeStr || '';
+    fields += `<div class="edit-field"><label>Horário de início</label><input type="time" id="ef-start" value="${startTimeVal}" placeholder="HH:MM"></div>`;
+    // Duração em minutos
+    const durMin = e.duration ? Math.round(e.duration / 60) : 0;
+    fields += `<div class="edit-field"><label>Duração (minutos)</label><input type="number" id="ef-dur" value="${durMin}" min="0" placeholder="Ex: 15"></div>`;
+  }
+
+  if (e.tipo === 'mama') {
+    fields += `<div class="edit-field"><label>Peito</label><select id="ef-peito">
+      <option value="">— Não informado —</option>
+      <option value="esquerdo" ${e.peito==='esquerdo'?'selected':''}>◀️ Esquerdo</option>
+      <option value="direito" ${e.peito==='direito'?'selected':''}>Direito ▶️</option>
+    </select></div>`;
+  }
+
+  if (e.tipo === 'fralda') {
+    fields += `<div class="edit-field"><label>Tipo</label><select id="ef-subtipo">
+      <option value="xixi" ${e.subTipo==='xixi'?'selected':''}>💧 Xixi</option>
+      <option value="coco" ${e.subTipo==='coco'?'selected':''}>💩 Cocô</option>
+      <option value="mista" ${e.subTipo==='mista'?'selected':''}>🔀 Mista</option>
+    </select></div>`;
+  }
+
+  fields += `<div class="edit-field"><label>Observação</label><input type="text" id="ef-obs" value="${e.obs||''}" placeholder="Opcional..."></div>`;
+
+  document.getElementById('edit-modal-fields').innerHTML = fields;
+  document.getElementById('edit-modal-overlay').classList.add('open');
+};
+
+window.closeEditModal = function() {
+  document.getElementById('edit-modal-overlay').classList.remove('open');
+  editingEntry = null;
+};
+
+window.saveEditModal = async function() {
+  if (!editingEntry) return;
+  const e = editingEntry;
+
+  const timeStr = document.getElementById('ef-time')?.value || e.timeStr;
+  const dateKey  = document.getElementById('ef-date')?.value || e.dateKey;
+  const obs      = document.getElementById('ef-obs')?.value.trim() ?? e.obs;
+
+  const updates = { timeStr, dateKey, obs };
+
+  if (e.tipo === 'mama' || e.tipo === 'sono') {
+    const startTime = document.getElementById('ef-start')?.value;
+    const durMin    = parseFloat(document.getElementById('ef-dur')?.value);
+    if (!isNaN(durMin)) updates.duration = Math.round(durMin * 60);
+    if (startTime) {
+      updates.startTimeStr = startTime;
+      // recalcular endTimeStr
+      const [sh, sm] = startTime.split(':').map(Number);
+      const end = new Date();
+      end.setHours(sh, sm + (updates.duration ? Math.round(updates.duration/60) : Math.round(e.duration/60)), 0);
+      updates.endTimeStr = end.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+      // recalcular período
+      updates.periodo = (sh >= 6 && sh < 20) ? 'dia' : 'noite';
+    }
+  }
+
+  if (e.tipo === 'mama') {
+    const peito = document.getElementById('ef-peito')?.value;
+    updates.peito = peito || null;
+  }
+
+  if (e.tipo === 'fralda') {
+    updates.subTipo = document.getElementById('ef-subtipo')?.value || e.subTipo;
+  }
+
+  try {
+    const { updateDoc } = await import("https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js");
+    await updateDoc(doc(db, 'rotina', e._id), updates);
+    showToast('✏️ Registro atualizado!');
+    closeEditModal();
+  } catch(err) {
+    alert('Erro ao salvar edição.');
+    console.error(err);
   }
 };
 
@@ -825,6 +1001,7 @@ function renderToday(entries) {
         <div class="history-entry-main">${entryMain(e)}</div>
         <div class="history-entry-sub">${e.timeStr || ''}${e.obs ? ' · ' + e.obs : ''}${e.autor ? ' · <span class=\"autor-badge ' + (e.autor==='papai'?'autor-pai':'autor-mae') + '\">' + (e.autor==='papai'?'💙 Papai':'💗 Mamãe') + '</span>' : ''}</div>
       </div>
+      <button class="history-edit" onclick="openEditModal('${e._id}')">✏️</button>
       <button class="history-del" onclick="delEntry('${e._id}')">✕</button>
     </div>
   `).join('');
@@ -880,6 +1057,7 @@ function renderHistory(entries) {
           <div class="history-entry-main">${entryMain(e)}</div>
           <div class="history-entry-sub">${e.timeStr || ''}${e.obs ? ' · ' + e.obs : ''}${e.autor ? ' · <span class=\"autor-badge ' + (e.autor==='papai'?'autor-pai':'autor-mae') + '\">' + (e.autor==='papai'?'💙 Papai':'💗 Mamãe') + '</span>' : ''}</div>
         </div>
+        <button class="history-edit" onclick="openEditModal('${e._id}')">✏️</button>
         <button class="history-del" onclick="delEntry('${e._id}')">✕</button>
       </div>
     `).join('');
