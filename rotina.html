@@ -190,6 +190,28 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .memory-del{background:none;border:none;font-size:13px;color:var(--muted);cursor:pointer;margin-left:auto;}
 
 
+/* MODAL HORÁRIO INÍCIO */
+.start-time-overlay{display:none;position:fixed;inset:0;background:rgba(59,26,46,.55);z-index:600;align-items:flex-end;justify-content:center;}
+.start-time-overlay.open{display:flex;}
+.start-time-box{background:#fff;border-radius:24px 24px 0 0;padding:26px 22px 44px;width:100%;max-width:480px;animation:slideUp .25s ease;}
+.start-time-title{font-size:16px;font-weight:700;color:var(--pink);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;}
+.start-time-sub{font-size:13px;color:var(--muted);margin-bottom:22px;line-height:1.5;}
+.start-time-picker-row{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:24px;}
+.stp-col{display:flex;flex-direction:column;align-items:center;gap:0;}
+.stp-drum{height:160px;overflow:hidden;position:relative;width:72px;}
+.stp-drum-inner{display:flex;flex-direction:column;cursor:grab;user-select:none;}
+.stp-item{height:40px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:var(--muted);transition:color .15s,font-size .15s;font-family:'Playfair Display',serif;flex-shrink:0;}
+.stp-item.selected{color:var(--text);font-size:34px;}
+.stp-drum::before,.stp-drum::after{content:'';position:absolute;left:0;right:0;height:52px;z-index:2;pointer-events:none;}
+.stp-drum::before{top:0;background:linear-gradient(to bottom,#fff 0%,rgba(255,255,255,0) 100%);}
+.stp-drum::after{bottom:0;background:linear-gradient(to top,#fff 0%,rgba(255,255,255,0) 100%);}
+.stp-sep{font-size:32px;font-weight:700;color:var(--text);padding:0 4px;align-self:center;margin-bottom:4px;}
+.stp-label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-top:4px;}
+.stp-highlight{position:absolute;top:50%;left:4px;right:4px;height:40px;transform:translateY(-50%);border-radius:10px;background:var(--pink-light);border:1.5px solid var(--border);pointer-events:none;z-index:1;}
+.start-time-btns{display:flex;gap:10px;}
+.btn-stp-cancel{flex:1;padding:13px;background:#fff;color:var(--muted);border:1.5px solid var(--border);border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;}
+.btn-stp-confirm{flex:1;padding:13px;background:linear-gradient(135deg,#ec4899,#f472b6);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 4px 12px rgba(236,72,153,.25);}
+
 /* MODAL EDIÇÃO */
 .edit-modal-overlay{display:none;position:fixed;inset:0;background:rgba(59,26,46,.5);z-index:500;align-items:flex-end;justify-content:center;}
 .edit-modal-overlay.open{display:flex;}
@@ -501,6 +523,38 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 </div>
 
+<!-- MODAL HORÁRIO DE INÍCIO -->
+<div class="start-time-overlay" id="start-time-overlay">
+  <div class="start-time-box">
+    <div class="start-time-title">
+      <span id="stp-title">🍼 Quando começou?</span>
+      <button style="background:none;border:none;font-size:20px;color:var(--muted);cursor:pointer;" onclick="closeStartTimePicker()">✕</button>
+    </div>
+    <div class="start-time-sub">Ajuste o horário de início. Já vem marcado com a hora atual — role para cima para voltar no tempo.</div>
+    <div class="start-time-picker-row">
+      <div class="stp-col">
+        <div class="stp-drum" id="stp-drum-h">
+          <div class="stp-highlight"></div>
+          <div class="stp-drum-inner" id="stp-inner-h"></div>
+        </div>
+        <div class="stp-label">hora</div>
+      </div>
+      <div class="stp-sep">:</div>
+      <div class="stp-col">
+        <div class="stp-drum" id="stp-drum-m">
+          <div class="stp-highlight"></div>
+          <div class="stp-drum-inner" id="stp-inner-m"></div>
+        </div>
+        <div class="stp-label">minuto</div>
+      </div>
+    </div>
+    <div class="start-time-btns">
+      <button class="btn-stp-cancel" onclick="closeStartTimePicker()">Cancelar</button>
+      <button class="btn-stp-confirm" onclick="confirmStartTime()">▶ Iniciar</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL EDIÇÃO DE REGISTRO -->
 <div class="edit-modal-overlay" id="edit-modal-overlay">
   <div class="edit-modal-box">
@@ -694,12 +748,156 @@ function activateTimerUI(type, startMs) {
   }, 1000);
 }
 
+// ==================
+// SELETOR DE HORÁRIO DE INÍCIO
+// ==================
+let stpPendingType = null;
+let stpHour = 0;
+let stpMin = 0;
+
+const ITEM_H = 40; // altura de cada item no tambor
+
+function buildDrum(innerId, values, selectedIdx) {
+  const inner = document.getElementById(innerId);
+  // padding antes e depois para centralizar
+  const pad = 2;
+  let html = '';
+  for (let i = 0; i < pad; i++) html += `<div class="stp-item" data-v=""></div>`;
+  values.forEach((v, i) => {
+    const sel = i === selectedIdx ? ' selected' : '';
+    html += `<div class="stp-item${sel}" data-v="${v}">${String(v).padStart(2,'0')}</div>`;
+  });
+  for (let i = 0; i < pad; i++) html += `<div class="stp-item" data-v=""></div>`;
+  inner.innerHTML = html;
+  // posiciona no selecionado
+  inner.style.transform = `translateY(${-selectedIdx * ITEM_H}px)`;
+}
+
+function attachDrumEvents(drumId, innerId, values, onSelect) {
+  const drum = document.getElementById(drumId);
+  const inner = document.getElementById(innerId);
+  let startY = 0;
+  let currentOffset = 0;
+  let isDragging = false;
+
+  function getOffset() {
+    const m = inner.style.transform.match(/-?[\d.]+/);
+    return m ? parseFloat(m[0]) : 0;
+  }
+
+  function snapToNearest(offset) {
+    let idx = Math.round(-offset / ITEM_H);
+    idx = Math.max(0, Math.min(values.length - 1, idx));
+    inner.style.transition = 'transform .2s ease';
+    inner.style.transform = `translateY(${-idx * ITEM_H}px)`;
+    // atualiza selected
+    inner.querySelectorAll('.stp-item[data-v]').forEach((el, i) => {
+      const realIdx = i - 2; // descontar padding
+      el.classList.toggle('selected', realIdx === idx);
+    });
+    onSelect(values[idx]);
+    setTimeout(() => { inner.style.transition = ''; }, 220);
+  }
+
+  // Touch
+  drum.addEventListener('touchstart', e => {
+    isDragging = true;
+    startY = e.touches[0].clientY;
+    currentOffset = getOffset();
+    inner.style.transition = '';
+  }, { passive: true });
+  drum.addEventListener('touchmove', e => {
+    if (!isDragging) return;
+    const dy = e.touches[0].clientY - startY;
+    inner.style.transform = `translateY(${currentOffset + dy}px)`;
+  }, { passive: true });
+  drum.addEventListener('touchend', e => {
+    if (!isDragging) return;
+    isDragging = false;
+    const dy = e.changedTouches[0].clientY - startY;
+    snapToNearest(currentOffset + dy);
+  });
+
+  // Mouse
+  drum.addEventListener('mousedown', e => {
+    isDragging = true;
+    startY = e.clientY;
+    currentOffset = getOffset();
+    inner.style.transition = '';
+    drum.style.cursor = 'grabbing';
+  });
+  window.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    const dy = e.clientY - startY;
+    inner.style.transform = `translateY(${currentOffset + dy}px)`;
+  });
+  window.addEventListener('mouseup', e => {
+    if (!isDragging) return;
+    isDragging = false;
+    drum.style.cursor = 'grab';
+    const dy = e.clientY - startY;
+    snapToNearest(currentOffset + dy);
+  });
+
+  // Wheel (scroll do mouse)
+  drum.addEventListener('wheel', e => {
+    e.preventDefault();
+    const offset = getOffset();
+    const dir = e.deltaY > 0 ? -1 : 1;
+    snapToNearest(offset + dir * ITEM_H);
+  }, { passive: false });
+}
+
+function openStartTimePicker(type) {
+  stpPendingType = type;
+  const now = new Date();
+  stpHour = now.getHours();
+  stpMin  = now.getMinutes();
+
+  const titles = { mama: '🍼 Quando começou a mamada?', sono: '😴 Quando começou a soneca?' };
+  document.getElementById('stp-title').textContent = titles[type] || 'Quando começou?';
+
+  const hours = Array.from({ length: 24 }, (_, i) => i);
+  const mins  = Array.from({ length: 60 }, (_, i) => i);
+
+  buildDrum('stp-inner-h', hours, stpHour);
+  buildDrum('stp-inner-m', mins,  stpMin);
+
+  attachDrumEvents('stp-drum-h', 'stp-inner-h', hours, v => { stpHour = v; });
+  attachDrumEvents('stp-drum-m', 'stp-inner-m', mins,  v => { stpMin  = v; });
+
+  document.getElementById('start-time-overlay').classList.add('open');
+}
+
+window.closeStartTimePicker = function() {
+  document.getElementById('start-time-overlay').classList.remove('open');
+  stpPendingType = null;
+};
+
+window.confirmStartTime = function() {
+  if (!stpPendingType) return;
+  const type = stpPendingType;
+  document.getElementById('start-time-overlay').classList.remove('open');
+  stpPendingType = null;
+
+  // Calcula o startMs com base na hora/minuto escolhidos
+  const now = new Date();
+  const chosen = new Date(now);
+  chosen.setHours(stpHour, stpMin, 0, 0);
+  // Se o horário escolhido for no futuro, assume que foi no dia anterior
+  if (chosen.getTime() > now.getTime()) {
+    chosen.setDate(chosen.getDate() - 1);
+  }
+  const startMs = chosen.getTime();
+
+  timerSave(type, startMs);
+  activateTimerUI(type, startMs);
+};
+
 window.startTimer = function(type) {
   const t = timers[type];
   if (t.running) return;
-  const startMs = Date.now();
-  timerSave(type, startMs);
-  activateTimerUI(type, startMs);
+  openStartTimePicker(type);
 };
 
 // Recupera timers ativos ao abrir o app
