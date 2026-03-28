@@ -204,14 +204,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   height:200px;
   overflow:hidden;
   position:relative;
+  isolation:isolate;
 }
-/* Gradientes e destaque ficam sobre o drum, posicionados absolutamente */
+/* Gradientes apenas no topo e base para desfocar — NÃO cobrem o centro */
 .stp-drum::before,.stp-drum::after{
   content:'';
-  position:absolute;left:0;right:0;height:72px;z-index:3;pointer-events:none;
+  position:absolute;left:0;right:0;height:68px;pointer-events:none;
+  z-index:3;
 }
-.stp-drum::before{top:0;background:linear-gradient(to bottom,rgba(255,255,255,1) 50%,rgba(255,255,255,0));}
-.stp-drum::after{bottom:0;background:linear-gradient(to top,rgba(255,255,255,1) 50%,rgba(255,255,255,0));}
+.stp-drum::before{top:0;background:linear-gradient(to bottom,#fff 40%,rgba(255,255,255,0));}
+.stp-drum::after{bottom:0;background:linear-gradient(to top,#fff 40%,rgba(255,255,255,0));}
+/* Highlight fica atrás do inner (z-index menor) */
 .stp-highlight{
   position:absolute;
   top:50%;left:6px;right:6px;
@@ -221,14 +224,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   background:var(--pink-light);
   border:1.5px solid var(--border);
   pointer-events:none;
-  z-index:2;
+  z-index:1;
 }
-/* O inner é arrastável e começa deslocado para centralizar o item 0 */
+/* Inner na frente do highlight, atrás dos gradientes */
 .stp-drum-inner{
   display:flex;
   flex-direction:column;
   will-change:transform;
-  /* translateY inicial será definido via JS */
+  position:relative;
+  z-index:2;
 }
 .stp-item{
   height:48px;
