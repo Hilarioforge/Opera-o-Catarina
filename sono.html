@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Catarina">
+<meta name="theme-color" content="#fce7f3">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>Janela de Sono — Catarina 🌸</title>
+<style>
+:root{
+  --bg:#f0f4ff;
+  --surface:#ffffff;
+  --surface2:#e8eeff;
+  --border:#c7d4f5;
+  --text:#1a2456;
+  --muted:#6b7fc4;
+  --blue:#3b5bdb;
+  --blue-light:#e8eeff;
+  --blue-mid:#748ffc;
+  --green:#10b981;
+  --green-bg:#d1fae5;
+  --amber:#f59e0b;
+  --amber-bg:#fef3c7;
+  --red:#ef4444;
+  --red-bg:#fee2e2;
+  --pink:#ec4899;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:90px;}
+
+/* HERO */
+.hero{background:linear-gradient(160deg,#dde8ff 0%,#eef3ff 100%);padding:28px 20px 22px;text-align:center;border-bottom:1px solid var(--border);}
+.hero-emoji{font-size:40px;display:block;margin-bottom:8px;animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.hero-title{font-family:'Playfair Display',serif;font-size:26px;color:var(--text);}
+.hero-sub{font-size:12px;color:var(--muted);margin-top:4px;}
+
+/* CONTENT */
+.content{padding:16px;}
+
+/* SECTION TITLE */
+.section-title{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;margin-top:20px;}
+.section-title:first-child{margin-top:0;}
+
+/* FAIXA ETÁRIA CARD */
+.faixa-card{background:var(--surface);border:1.5px solid var(--border);border-radius:18px;padding:18px;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;}
+.faixa-info{}
+.faixa-nome{font-size:18px;font-weight:700;color:var(--text);}
+.faixa-sub{font-size:13px;color:var(--muted);margin-top:2px;}
+.faixa-badge{background:var(--blue-light);color:var(--blue);font-size:14px;font-weight:700;padding:8px 14px;border-radius:20px;}
+
+/* STATUS CARDS */
+.status-card{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:10px;position:relative;overflow:hidden;}
+.status-card.ok{border-left:4px solid var(--green);}
+.status-card.warn{border-left:4px solid var(--amber);}
+.status-card.alert{border-left:4px solid var(--red);}
+.status-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.status-icon{font-size:28px;flex-shrink:0;}
+.status-title{font-size:16px;font-weight:700;}
+.status-card.ok .status-title{color:var(--green);}
+.status-card.warn .status-title{color:var(--amber);}
+.status-card.alert .status-title{color:var(--red);}
+.status-desc{font-size:13px;color:var(--muted);margin-top:2px;}
+/* barra de progresso */
+.progress-wrap{margin-top:10px;}
+.progress-bar-bg{background:#f0f0f0;border-radius:6px;height:8px;overflow:hidden;}
+.progress-bar-fill{height:8px;border-radius:6px;transition:width .4s ease;}
+.fill-green{background:var(--green);}
+.fill-amber{background:var(--amber);}
+.fill-red{background:var(--red);}
+.progress-label{font-size:11px;color:var(--muted);margin-top:5px;}
+
+/* RESUMO HOJE */
+.resumo-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px;}
+.resumo-card{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:16px;text-align:center;}
+.resumo-icon{font-size:26px;margin-bottom:4px;}
+.resumo-value{font-size:24px;font-weight:700;color:var(--text);}
+.resumo-label{font-size:11px;color:var(--muted);margin-top:2px;}
+.resumo-meta{font-size:11px;font-weight:600;color:var(--blue);margin-top:4px;}
+
+/* RECOMENDAÇÕES */
+.rec-card{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:10px;}
+.rec-item{display:flex;align-items:center;gap:14px;padding:14px 16px;border-top:1px solid var(--border);}
+.rec-item:first-child{border-top:none;}
+.rec-icon{font-size:22px;flex-shrink:0;}
+.rec-label{font-size:11px;color:var(--muted);font-weight:500;}
+.rec-value{font-size:15px;font-weight:700;color:var(--text);margin-top:1px;}
+
+/* DICA CARD */
+.dica-card{background:var(--blue-light);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start;}
+.dica-icon{font-size:20px;flex-shrink:0;}
+.dica-text{font-size:13px;color:var(--text);line-height:1.6;}
+
+/* LEGENDA */
+.legenda-card{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:10px;}
+.legenda-item{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:13px;color:var(--text);}
+.legenda-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.dot-green{background:var(--green);}
+.dot-amber{background:var(--amber);}
+.dot-red{background:var(--red);}
+
+/* RODAPÉ */
+.footer-note{text-align:center;font-size:11px;color:var(--muted);padding:8px 16px 4px;line-height:1.6;}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #fad4e8;display:flex;padding:8px 0 env(safe-area-inset-bottom,8px);z-index:100;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;font-weight:600;color:#b07090;text-decoration:none;padding:4px 0;}
+.nav-item.active{color:#3b5bdb;}
+.nav-item span:first-child{font-size:22px;}
+
+/* EMPTY */
+.empty-state{text-align:center;padding:30px 20px;color:var(--muted);font-size:13px;}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <span class="hero-emoji">💤</span>
+  <div class="hero-title">Janela de Sono</div>
+  <div class="hero-sub">Baseado nas diretrizes da OMS para bebês</div>
+</div>
+
+<div class="content">
+
+  <!-- FAIXA ETÁRIA -->
+  <div class="section-title">Faixa etária do bebê</div>
+  <div class="faixa-card">
+    <div class="faixa-info">
+      <div class="faixa-nome" id="faixa-nome">—</div>
+      <div class="faixa-sub" id="faixa-sub">Calculando...</div>
+    </div>
+    <div class="faixa-badge" id="faixa-badge">—</div>
+  </div>
+
+  <!-- STATUS AGORA -->
+  <div class="section-title" style="margin-top:18px;">Status agora</div>
+  <div id="status-sono"></div>
+  <div id="status-mama"></div>
+
+  <!-- RESUMO HOJE -->
+  <div class="section-title" style="margin-top:18px;">Resumo de hoje</div>
+  <div class="resumo-grid">
+    <div class="resumo-card">
+      <div class="resumo-icon">😴</div>
+      <div class="resumo-value" id="res-sonecas">—</div>
+      <div class="resumo-label">Sonecas</div>
+      <div class="resumo-meta" id="res-sonecas-meta">—</div>
+    </div>
+    <div class="resumo-card">
+      <div class="resumo-icon">⏱️</div>
+      <div class="resumo-value" id="res-sono-total">—</div>
+      <div class="resumo-label">Dormindo</div>
+      <div class="resumo-meta" id="res-sono-meta">—</div>
+    </div>
+  </div>
+
+  <!-- RECOMENDAÇÕES -->
+  <div class="section-title" style="margin-top:18px;">Recomendações para essa fase</div>
+  <div class="rec-card" id="rec-card">
+    <div class="empty-state">Carregando...</div>
+  </div>
+
+  <!-- DICA -->
+  <div class="dica-card" id="dica-card" style="display:none;">
+    <div class="dica-icon">💡</div>
+    <div class="dica-text" id="dica-text"></div>
+  </div>
+
+  <!-- LEGENDA -->
+  <div class="section-title">Legenda</div>
+  <div class="legenda-card">
+    <div class="legenda-item"><div class="legenda-dot dot-green"></div>Tudo bem — dentro do ideal</div>
+    <div class="legenda-item"><div class="legenda-dot dot-amber"></div>Atenção — próximo do limite</div>
+    <div class="legenda-item"><div class="legenda-dot dot-red"></div>Urgente — passou do ideal</div>
+  </div>
+
+  <div class="footer-note">Baseado nas diretrizes da OMS e Academia Americana de Pediatria (AAP)</div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <a href="index.html" class="nav-item">
+    <span>🌸</span>
+    <span>Início</span>
+  </a>
+  <a href="rotina.html" class="nav-item">
+    <span>🍼</span>
+    <span>Rotina</span>
+  </a>
+  <a href="necessidades.html" class="nav-item">
+    <span>🛒</span>
+    <span>Lista</span>
+  </a>
+  <a href="sono.html" class="nav-item active">
+    <span>💤</span>
+    <span>Sono</span>
+  </a>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCrVxYju5nYLYyXaczK76znjqVQmnWwMnM",
+  authDomain: "operacaocatarina.firebaseapp.com",
+  projectId: "operacaocatarina",
+  storageBucket: "operacaocatarina.firebasestorage.app",
+  messagingSenderId: "833161287638",
+  appId: "1:833161287638:web:7915602c944d5319793677"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ==================
+// DATA DE NASCIMENTO
+// ==================
+const BIRTH_DATE = new Date('2026-03-10T18:26:00');
+
+// ==================
+// TABELA OMS/AAP POR FAIXA ETÁRIA
+// ==================
+const FAIXAS = [
+  {
+    min: 0, max: 30, // 0-1 mês
+    nome: '0 a 1 mês',
+    sonoTotal: { min: 15, max: 17 },   // horas/dia
+    janelaAcordado: { min: 45, max: 60 }, // minutos acordado entre sonecas
+    intervaloMama: { min: 1.5, max: 3 },  // horas
+    sonecasDia: { min: 5, max: 8 },
+    dica: 'Recém-nascido dorme a maior parte do dia. As mamadas ditam o ritmo — não force horários ainda.',
+  },
+  {
+    min: 30, max: 60, // 1-2 meses
+    nome: '1 a 2 meses',
+    sonoTotal: { min: 15, max: 17 },
+    janelaAcordado: { min: 60, max: 90 }, // 1h-1h30
+    intervaloMama: { min: 2, max: 3 },
+    sonecasDia: { min: 4, max: 5 },
+    dica: 'O bebê começa a ter períodos mais longos acordado. Ainda precisa de muitas sonecas ao longo do dia.',
+  },
+  {
+    min: 60, max: 90, // 2-3 meses
+    nome: '2 a 3 meses',
+    sonoTotal: { min: 14, max: 17 },
+    janelaAcordado: { min: 75, max: 105 },
+    intervaloMama: { min: 2.5, max: 3.5 },
+    sonecasDia: { min: 3, max: 5 },
+    dica: 'Alguns bebês começam a dormir trechos mais longos à noite. Exponha à luz natural durante o dia para ajudar o ritmo circadiano.',
+  },
+  {
+    min: 90, max: 150, // 3-5 meses
+    nome: '3 a 5 meses',
+    sonoTotal: { min: 14, max: 16 },
+    janelaAcordado: { min: 90, max: 120 },
+    intervaloMama: { min: 2.5, max: 4 },
+    sonecasDia: { min: 3, max: 4 },
+    dica: 'Período de consolidação do sono. Rotina de dormir consistente começa a fazer diferença agora.',
+  },
+  {
+    min: 150, max: 210, // 5-7 meses
+    nome: '5 a 7 meses',
+    sonoTotal: { min: 13, max: 15 },
+    janelaAcordado: { min: 120, max: 180 },
+    intervaloMama: { min: 3, max: 4 },
+    sonecasDia: { min: 2, max: 3 },
+    dica: 'Regressão do sono aos 4-5 meses é normal. O bebê pode começar a se virar e preferir posições diferentes.',
+  },
+  {
+    min: 210, max: 270, // 7-9 meses
+    nome: '7 a 9 meses',
+    sonoTotal: { min: 12, max: 15 },
+    janelaAcordado: { min: 150, max: 210 },
+    intervaloMama: { min: 3, max: 5 },
+    sonecasDia: { min: 2, max: 3 },
+    dica: 'Ansiedade de separação pode causar despertares. Rotina consistente de dormir ajuda muito.',
+  },
+  {
+    min: 270, max: 365, // 9-12 meses
+    nome: '9 a 12 meses',
+    sonoTotal: { min: 12, max: 14 },
+    janelaAcordado: { min: 180, max: 270 },
+    intervaloMama: { min: 4, max: 6 },
+    sonecasDia: { min: 1, max: 2 },
+    dica: 'Transição para 1 soneca pode começar. Sono noturno mais longo e estável.',
+  },
+];
+
+// ==================
+// HELPERS
+// ==================
+function pad(n) { return String(n).padStart(2, '0'); }
+
+function localDateKey(date) {
+  const d = date || new Date();
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+
+function getDiasDeVida() {
+  return Math.floor((Date.now() - BIRTH_DATE.getTime()) / (1000 * 60 * 60 * 24));
+}
+
+function getFaixa(dias) {
+  return FAIXAS.find(f => dias >= f.min && dias < f.max) || FAIXAS[FAIXAS.length - 1];
+}
+
+function formatMinutes(min) {
+  if (min < 60) return `${Math.round(min)}min`;
+  const h = Math.floor(min / 60);
+  const m = Math.round(min % 60);
+  return m > 0 ? `${h}h ${m}min` : `${h}h`;
+}
+
+function formatHours(sec) {
+  const totalMin = sec / 60;
+  const h = Math.floor(totalMin / 60);
+  const m = Math.round(totalMin % 60);
+  if (h === 0) return `${m}min`;
+  return m > 0 ? `${h}h ${m}min` : `${h}h`;
+}
+
+// ==================
+// RENDERIZA STATUS CARD
+// ==================
+function renderStatusCard(containerId, icon, titulo, desc, minAgo, idealMin, idealMax) {
+  const pct = Math.min((minAgo / idealMax) * 100, 100);
+  let estado = 'ok';
+  let fillClass = 'fill-green';
+  if (minAgo > idealMax) { estado = 'alert'; fillClass = 'fill-red'; }
+  else if (minAgo > idealMax * 0.8) { estado = 'warn'; fillClass = 'fill-amber'; }
+
+  const iconMap = {
+    ok:   '😊',
+    warn: '😐',
+    alert:'😢',
+  };
+  const tituloMap = {
+    ok:    titulo + ' — tudo bem!',
+    warn:  titulo + ' — atenção!',
+    alert: titulo + ' — passou da hora!',
+  };
+
+  document.getElementById(containerId).innerHTML = `
+    <div class="status-card ${estado}">
+      <div class="status-header">
+        <div class="status-icon">${iconMap[estado]}</div>
+        <div>
+          <div class="status-title">${tituloMap[estado]}</div>
+          <div class="status-desc">${desc}</div>
+        </div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill ${fillClass}" style="width:${pct}%"></div>
+        </div>
+        <div class="progress-label">
+          ${icon} há ${formatMinutes(minAgo)} &nbsp;|&nbsp; Ideal: até ${idealMin < 60 ? idealMin+'min' : Math.floor(idealMin/60)+'h'+(idealMin%60>0?' '+idealMin%60+'min':'')} – ${idealMax < 60 ? idealMax+'min' : Math.floor(idealMax/60)+'h'+(idealMax%60>0?' '+idealMax%60+'min':'')}
+        </div>
+      </div>
+    </div>`;
+}
+
+// ==================
+// RENDER RECOMENDAÇÕES
+// ==================
+function renderRec(faixa) {
+  const ja = faixa.janelaAcordado;
+  const im = faixa.intervaloMama;
+  const st = faixa.sonoTotal;
+  const sd = faixa.sonecasDia;
+
+  const jaStr = ja.min < 60
+    ? `${ja.min} a ${ja.max}min`
+    : `${ja.min/60 === Math.floor(ja.min/60) ? ja.min/60 : (ja.min/60).toFixed(1)}h a ${ja.max < 60 ? ja.max+'min' : (ja.max/60 === Math.floor(ja.max/60) ? ja.max/60+'h' : (ja.max/60).toFixed(1)+'h')}`;
+
+  const imStr = `${im.min}h a ${im.max}h`;
+  const stStr = `${st.min} a ${st.max} horas`;
+  const sdStr = `${sd.min} a ${sd.max} sonecas`;
+
+  document.getElementById('rec-card').innerHTML = `
+    <div class="rec-item">
+      <div class="rec-icon">😴</div>
+      <div>
+        <div class="rec-label">Sono total por dia</div>
+        <div class="rec-value">${stStr}</div>
+      </div>
+    </div>
+    <div class="rec-item">
+      <div class="rec-icon">⏰</div>
+      <div>
+        <div class="rec-label">Tempo acordado entre sonecas</div>
+        <div class="rec-value">${ja.min < 60 ? ja.min+'min' : ja.min/60+'h'} a ${ja.max < 60 ? ja.max+'min' : (ja.max >= 60 ? (ja.max/60 === Math.floor(ja.max/60) ? ja.max/60+'h' : Math.floor(ja.max/60)+'h '+ja.max%60+'min') : ja.max+'min')}</div>
+      </div>
+    </div>
+    <div class="rec-item">
+      <div class="rec-icon">🍼</div>
+      <div>
+        <div class="rec-label">Intervalo entre mamadas</div>
+        <div class="rec-value">${imStr}</div>
+      </div>
+    </div>
+    <div class="rec-item">
+      <div class="rec-icon">🌙</div>
+      <div>
+        <div class="rec-label">Sonecas por dia</div>
+        <div class="rec-value">${sdStr}</div>
+      </div>
+    </div>`;
+
+  const dicaCard = document.getElementById('dica-card');
+  document.getElementById('dica-text').textContent = faixa.dica;
+  dicaCard.style.display = 'flex';
+}
+
+// ==================
+// MAIN RENDER
+// ==================
+function render(entries) {
+  const dias = getDiasDeVida();
+  const faixa = getFaixa(dias);
+  const now = Date.now();
+  const todayKey = localDateKey();
+
+  // Faixa etária
+  document.getElementById('faixa-nome').textContent = faixa.nome;
+  document.getElementById('faixa-sub').textContent = `Catarina tem ${dias} dias de vida`;
+  document.getElementById('faixa-badge').textContent = `${dias}d`;
+
+  // Entradas de hoje
+  const today = entries.filter(e => e.dateKey === todayKey);
+  const sonecasHoje = today.filter(e => e.tipo === 'sono');
+  const mamasHoje   = today.filter(e => e.tipo === 'mama');
+
+  // ── STATUS SONO ──
+  // Acha a última soneca que terminou (tem ts e duration)
+  const ultimaSoneca = [...entries]
+    .filter(e => e.tipo === 'sono' && e.ts)
+    .sort((a,b) => (b.ts?.seconds||0) - (a.ts?.seconds||0))[0];
+
+  if (ultimaSoneca) {
+    // Quanto tempo está acordado desde o fim da última soneca
+    const fimSonecaMs = ultimaSoneca.ts.seconds * 1000;
+    const acordadoMin = (now - fimSonecaMs) / 60000;
+    renderStatusCard(
+      'status-sono',
+      '😴',
+      'Janela de sono',
+      `Está acordada há ${formatMinutes(acordadoMin)} — ${acordadoMin <= faixa.janelaAcordado.max ? 'dentro do ideal' : 'acima do ideal'}`,
+      acordadoMin,
+      faixa.janelaAcordado.min,
+      faixa.janelaAcordado.max
+    );
+  } else {
+    document.getElementById('status-sono').innerHTML = `
+      <div class="status-card" style="border-left:4px solid var(--muted)">
+        <div class="status-header">
+          <div class="status-icon">😴</div>
+          <div>
+            <div class="status-title" style="color:var(--muted)">Janela de sono</div>
+            <div class="status-desc">Nenhuma soneca registrada ainda hoje</div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  // ── STATUS MAMADA ──
+  const ultimaMama = [...entries]
+    .filter(e => e.tipo === 'mama' && e.ts)
+    .sort((a,b) => (b.ts?.seconds||0) - (a.ts?.seconds||0))[0];
+
+  if (ultimaMama) {
+    const mamaMs = ultimaMama.ts.seconds * 1000;
+    const mamaMin = (now - mamaMs) / 60000;
+    const mamaIdealMin = faixa.intervaloMama.min * 60;
+    const mamaIdealMax = faixa.intervaloMama.max * 60;
+    renderStatusCard(
+      'status-mama',
+      '🍼',
+      'Hora de mamar',
+      `Já faz ${formatMinutes(mamaMin)} desde a última mamada`,
+      mamaMin,
+      mamaIdealMin,
+      mamaIdealMax
+    );
+  } else {
+    document.getElementById('status-mama').innerHTML = `
+      <div class="status-card" style="border-left:4px solid var(--muted)">
+        <div class="status-header">
+          <div class="status-icon">🍼</div>
+          <div>
+            <div class="status-title" style="color:var(--muted)">Mamada</div>
+            <div class="status-desc">Nenhuma mamada registrada ainda hoje</div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  // ── RESUMO HOJE ──
+  const sonoTotalSec = sonecasHoje.reduce((s, e) => s + (e.duration || 0), 0);
+  const sonoTotalHoras = sonoTotalSec / 3600;
+  const sonoMetaMin = faixa.sonoTotal.min;
+  const sonoMetaMax = faixa.sonoTotal.max;
+
+  document.getElementById('res-sonecas').textContent = sonecasHoje.length;
+  document.getElementById('res-sonecas-meta').textContent = `Meta: ${faixa.sonecasDia.min}-${faixa.sonecasDia.max}`;
+  document.getElementById('res-sono-total').textContent = formatHours(sonoTotalSec);
+  document.getElementById('res-sono-meta').textContent = `Meta: ${sonoMetaMin}-${sonoMetaMax}h/dia`;
+
+  // ── RECOMENDAÇÕES ──
+  renderRec(faixa);
+}
+
+// ==================
+// FIREBASE LISTENER
+// ==================
+onSnapshot(query(collection(db, 'rotina'), orderBy('ts', 'desc')), snap => {
+  const entries = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+  render(entries);
+});
+
+// Atualiza os status a cada minuto (para os timers ficarem vivos)
+setInterval(() => {
+  onSnapshot(query(collection(db, 'rotina'), orderBy('ts', 'desc')), snap => {
+    const entries = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+    render(entries);
+  });
+}, 60000);
+
+</script>
+</body>
+</html>
