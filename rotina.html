@@ -1007,6 +1007,9 @@ window.stopTimer = async function(type) {
   const now = new Date();
   const dateKey = localDateKey(now);
   const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  // endTs: timestamp unix (segundos) do momento em que a atividade TERMINOU
+  // A Janela de Sono usa este valor para saber quando o bebê acordou / terminou de mamar
+  const endTs = Math.floor(now.getTime() / 1000);
 
   // dados extras para soneca
   let sonoExtra = {};
@@ -1023,8 +1026,18 @@ window.stopTimer = async function(type) {
     document.getElementById('sono-inicio-str').textContent = '--:--';
   }
 
+  // Para mamada: guarda também startTimeStr
+  let mamaExtra = {};
+  if (type === 'mama') {
+    const startDate = timers[type].startDate || now;
+    mamaExtra = {
+      startTimeStr: startDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+      endTimeStr: timeStr,
+    };
+  }
+
   try {
-    const data = { tipo: type, duration, obs, dateKey, timeStr, ts: serverTimestamp(), ...sonoExtra };
+    const data = { tipo: type, duration, obs, dateKey, timeStr, endTs, ts: serverTimestamp(), ...sonoExtra, ...mamaExtra };
     if (peito) data.peito = peito;
     if (autorAtual) data.autor = autorAtual;
     await addDoc(collection(db, 'rotina'), data);
@@ -1073,21 +1086,22 @@ window.openEditModal = function(id) {
 
   let fields = '';
 
-  // Horário
-  const timeVal = e.timeStr ? e.timeStr : '';
-  fields += `<div class="edit-field"><label>Horário (fim)</label><input type="time" id="ef-time" value="${timeVal}"></div>`;
-
   // Data
   const dateVal = e.dateKey || '';
   fields += `<div class="edit-field"><label>Data</label><input type="date" id="ef-date" value="${dateVal}"></div>`;
 
   if (e.tipo === 'mama' || e.tipo === 'sono') {
-    // Horário de início (para calcular duração)
-    const startTimeVal = e.startTimeStr || '';
-    fields += `<div class="edit-field"><label>Horário de início</label><input type="time" id="ef-start" value="${startTimeVal}" placeholder="HH:MM"></div>`;
-    // Duração em minutos
+    // Início e Fim — duração será CALCULADA automaticamente
+    const startVal = e.startTimeStr || '';
+    const endVal   = e.timeStr || ''; // timeStr sempre guarda o horário de FIM
+    fields += `<div class="edit-field"><label>Horário de início</label><input type="time" id="ef-start" value="${startVal}" placeholder="HH:MM"></div>`;
+    fields += `<div class="edit-field"><label>Horário de fim</label><input type="time" id="ef-end" value="${endVal}" placeholder="HH:MM"></div>`;
+    // Mostra a duração atual como referência (somente leitura)
     const durMin = e.duration ? Math.round(e.duration / 60) : 0;
-    fields += `<div class="edit-field"><label>Duração (minutos)</label><input type="number" id="ef-dur" value="${durMin}" min="0" placeholder="Ex: 15"></div>`;
+    fields += `<div class="edit-field"><label style="color:var(--muted)">Duração atual (será recalculada)</label><input type="text" id="ef-dur-display" value="${durMin} min" disabled style="background:#f5f5f5;color:var(--muted);"></div>`;
+  } else {
+    // Fralda — só tem horário de registro
+    fields += `<div class="edit-field"><label>Horário</label><input type="time" id="ef-end" value="${e.timeStr||''}"></div>`;
   }
 
   if (e.tipo === 'mama') {
@@ -1109,6 +1123,26 @@ window.openEditModal = function(id) {
   fields += `<div class="edit-field"><label>Observação</label><input type="text" id="ef-obs" value="${e.obs||''}" placeholder="Opcional..."></div>`;
 
   document.getElementById('edit-modal-fields').innerHTML = fields;
+
+  // Atualiza o display de duração em tempo real conforme usuário muda início/fim
+  if (e.tipo === 'mama' || e.tipo === 'sono') {
+    const updateDurDisplay = () => {
+      const sVal = document.getElementById('ef-start')?.value;
+      const eVal = document.getElementById('ef-end')?.value;
+      if (!sVal || !eVal) return;
+      const [sh, sm] = sVal.split(':').map(Number);
+      const [eh, em] = eVal.split(':').map(Number);
+      let diffMin = (eh * 60 + em) - (sh * 60 + sm);
+      if (diffMin < 0) diffMin += 24 * 60; // passou da meia-noite
+      const display = document.getElementById('ef-dur-display');
+      if (display) display.value = diffMin + ' min';
+    };
+    setTimeout(() => {
+      document.getElementById('ef-start')?.addEventListener('change', updateDurDisplay);
+      document.getElementById('ef-end')?.addEventListener('change', updateDurDisplay);
+    }, 50);
+  }
+
   document.getElementById('edit-modal-overlay').classList.add('open');
 };
 
@@ -1121,25 +1155,38 @@ window.saveEditModal = async function() {
   if (!editingEntry) return;
   const e = editingEntry;
 
-  const timeStr = document.getElementById('ef-time')?.value || e.timeStr;
-  const dateKey  = document.getElementById('ef-date')?.value || e.dateKey;
-  const obs      = document.getElementById('ef-obs')?.value.trim() ?? e.obs;
+  const dateKey = document.getElementById('ef-date')?.value || e.dateKey;
+  const obs     = document.getElementById('ef-obs')?.value.trim() ?? e.obs;
+  const endVal  = document.getElementById('ef-end')?.value || e.timeStr;
 
-  const updates = { timeStr, dateKey, obs };
+  const updates = { dateKey, obs, timeStr: endVal };
 
   if (e.tipo === 'mama' || e.tipo === 'sono') {
-    const startTime = document.getElementById('ef-start')?.value;
-    const durMin    = parseFloat(document.getElementById('ef-dur')?.value);
-    if (!isNaN(durMin)) updates.duration = Math.round(durMin * 60);
-    if (startTime) {
-      updates.startTimeStr = startTime;
-      // recalcular endTimeStr
-      const [sh, sm] = startTime.split(':').map(Number);
-      const end = new Date();
-      end.setHours(sh, sm + (updates.duration ? Math.round(updates.duration/60) : Math.round(e.duration/60)), 0);
-      updates.endTimeStr = end.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
-      // recalcular período
+    const startVal = document.getElementById('ef-start')?.value || e.startTimeStr || '';
+
+    // Recalcula duração a partir de início e fim
+    if (startVal && endVal) {
+      const [sh, sm] = startVal.split(':').map(Number);
+      const [eh, em] = endVal.split(':').map(Number);
+      let diffMin = (eh * 60 + em) - (sh * 60 + sm);
+      if (diffMin < 0) diffMin += 24 * 60;
+      updates.duration = diffMin * 60; // em segundos
+
+      updates.startTimeStr = startVal;
+      updates.endTimeStr   = endVal;
+
+      // Recalcula período (dia/noite) com base no início
       updates.periodo = (sh >= 6 && sh < 20) ? 'dia' : 'noite';
+
+      // Grava endTs como timestamp real para a Janela de Sono usar
+      // Constrói a data real de fim combinando dateKey + horário de fim
+      const [fy, fmo, fd] = dateKey.split('-').map(Number);
+      const endDate = new Date(fy, fmo - 1, fd, eh, em, 0, 0);
+      // Se fim < início (passou meia-noite), o fim é no dia seguinte
+      if (diffMin !== (eh * 60 + em) - (sh * 60 + sm)) {
+        endDate.setDate(endDate.getDate() + 1);
+      }
+      updates.endTs = Math.floor(endDate.getTime() / 1000); // unix seconds
     }
   }
 

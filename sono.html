@@ -436,17 +436,19 @@ function render(entries) {
   // Entradas de hoje
   const today = entries.filter(e => e.dateKey === todayKey);
   const sonecasHoje = today.filter(e => e.tipo === 'sono');
-  const mamasHoje   = today.filter(e => e.tipo === 'mama');
 
   // ── STATUS SONO ──
-  // Acha a última soneca que terminou (tem ts e duration)
+  // Usa endTs (quando acordou) — se não existir ainda, cai para ts como fallback
+  // Ordena pelo endTs ou ts mais recente
+  const getEndSec = e => e.endTs || e.ts?.seconds || 0;
+
   const ultimaSoneca = [...entries]
-    .filter(e => e.tipo === 'sono' && e.ts)
-    .sort((a,b) => (b.ts?.seconds||0) - (a.ts?.seconds||0))[0];
+    .filter(e => e.tipo === 'sono' && (e.endTs || e.ts))
+    .sort((a, b) => getEndSec(b) - getEndSec(a))[0];
 
   if (ultimaSoneca) {
-    // Quanto tempo está acordado desde o fim da última soneca
-    const fimSonecaMs = ultimaSoneca.ts.seconds * 1000;
+    // Conta a partir do FIM da soneca (quando o bebê acordou)
+    const fimSonecaMs = getEndSec(ultimaSoneca) * 1000;
     const acordadoMin = (now - fimSonecaMs) / 60000;
     renderStatusCard(
       'status-sono',
@@ -471,13 +473,15 @@ function render(entries) {
   }
 
   // ── STATUS MAMADA ──
+  // Usa endTs (quando terminou de mamar) — se não existir, cai para ts
   const ultimaMama = [...entries]
-    .filter(e => e.tipo === 'mama' && e.ts)
-    .sort((a,b) => (b.ts?.seconds||0) - (a.ts?.seconds||0))[0];
+    .filter(e => e.tipo === 'mama' && (e.endTs || e.ts))
+    .sort((a, b) => getEndSec(b) - getEndSec(a))[0];
 
   if (ultimaMama) {
-    const mamaMs = ultimaMama.ts.seconds * 1000;
-    const mamaMin = (now - mamaMs) / 60000;
+    // Conta a partir do FIM da mamada
+    const fimMamaMs = getEndSec(ultimaMama) * 1000;
+    const mamaMin = (now - fimMamaMs) / 60000;
     const mamaIdealMin = faixa.intervaloMama.min * 60;
     const mamaIdealMax = faixa.intervaloMama.max * 60;
     renderStatusCard(
@@ -504,7 +508,6 @@ function render(entries) {
 
   // ── RESUMO HOJE ──
   const sonoTotalSec = sonecasHoje.reduce((s, e) => s + (e.duration || 0), 0);
-  const sonoTotalHoras = sonoTotalSec / 3600;
   const sonoMetaMin = faixa.sonoTotal.min;
   const sonoMetaMax = faixa.sonoTotal.max;
 
@@ -520,18 +523,14 @@ function render(entries) {
 // ==================
 // FIREBASE LISTENER
 // ==================
+let allEntries = [];
 onSnapshot(query(collection(db, 'rotina'), orderBy('ts', 'desc')), snap => {
-  const entries = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
-  render(entries);
+  allEntries = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+  render(allEntries);
 });
 
-// Atualiza os status a cada minuto (para os timers ficarem vivos)
-setInterval(() => {
-  onSnapshot(query(collection(db, 'rotina'), orderBy('ts', 'desc')), snap => {
-    const entries = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
-    render(entries);
-  });
-}, 60000);
+// Atualiza os status a cada minuto sem re-assinar o Firebase
+setInterval(() => render(allEntries), 60000);
 
 </script>
 </body>
