@@ -69,6 +69,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .exam-ico{font-size:18px;}
 .exam-nm{font-size:14px;font-weight:600;flex:1;}
 .exam-ok-badge{font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;background:#d1fae5;color:#065f46;}
+.exam-alert-badge{font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;background:#fee2e2;color:#991b1b;}
+.exam-warn-badge{font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;background:#fef3c7;color:#92400e;}
+.exam-info-badge{font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;background:#dbeafe;color:#1e40af;}
+.eok{color:#059669;font-weight:600;}
+.ewarn{color:#d97706;font-weight:600;}
+.ealert{color:#dc2626;font-weight:600;}
+.exam-context{background:#fef3c7;border-radius:10px;padding:10px 12px;margin-top:8px;font-size:12px;color:#78350f;line-height:1.6;border-left:3px solid #f59e0b;}
 .exam-chev{font-size:10px;color:var(--muted);transition:transform .2s;}
 .exam-chev.open{transform:rotate(180deg);}
 .exam-bd{display:none;padding:4px 14px 14px;}
@@ -302,6 +309,119 @@ body.dark .bottom-nav { background: var(--surface) !important; border-color: var
       <div class="exam-laudo"><div class="exam-laudo-title">USG Doppler — 06/03/2026 (37 semanas)</div><div class="exam-laudo-text"><span class="eok">✓ Normal.</span> BCF 150/min. Peso 2.524g (percentil 10,5%). Líquido amniótico normal (ILA 17,1cm). Doppler normal.</div></div>
     </div>
   </div>
+</div>
+
+<!-- EXAMES PÓS-NASCIMENTO -->
+<div class="section" style="margin-top:16px">
+  <div class="section-title">Exames pós-nascimento</div>
+
+  <!-- PEZINHO 1ª COLETA -->
+  <div class="exam-cat">
+    <div class="exam-hdr" onclick="tog('pez1')">
+      <span class="exam-ico">👣</span>
+      <span class="exam-nm">Teste do Pezinho — 1ª Coleta</span>
+      <span class="exam-alert-badge">⚠️ Alterado</span>
+      <span class="exam-chev" id="c-pez1">▼</span>
+    </div>
+    <div class="exam-bd" id="pez1">
+      <div class="exam-laudo">
+        <div class="exam-laudo-title">Instituto Jô Clemente — 16/03/2026 (6 dias de vida)</div>
+        <div class="exam-laudo-text">
+          <span class="eok">✓ Hipotireoidismo Congênito:</span> T4NEO 9,10 ug/dL — Normal (ref &gt; 5,00).<br>
+          <span class="eok">✓ Galactose Enzima:</span> GALTS 11,31 U/dL — Normal (ref &gt; 4,20).<br>
+          <span class="eok">✓ Toxoplasmose Congênita:</span> IgM Não Reagente — Normal.<br>
+          <span class="eok">✓ G6PD (Glicose-6-Fosfato Desidrogenase):</span> 65,95 U/dL — Normal (ref &gt; 26,40).<br>
+          <span class="ealert">⚠️ Triagem Metabólica (NEOTANDEM):</span> <strong>Citrulina (CIT) = 5,82 µmol/L</strong> — abaixo do valor de referência (6,96–34,23). Recomendada nova coleta.
+        </div>
+        <div class="exam-context">
+          💡 <strong>O que é a Citrulina?</strong> É um aminoácido envolvido no ciclo da ureia. Valor levemente abaixo pode indicar variação normal em recém-nascido prematuro tardio (37 semanas) ou ser transitório. A nova coleta foi solicitada para confirmar.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PEZINHO 2ª COLETA -->
+  <div class="exam-cat">
+    <div class="exam-hdr" onclick="tog('pez2')">
+      <span class="exam-ico">👣</span>
+      <span class="exam-nm">Teste do Pezinho — 2ª Coleta</span>
+      <span class="exam-alert-badge">⚠️ Alterado</span>
+      <span class="exam-chev" id="c-pez2">▼</span>
+    </div>
+    <div class="exam-bd" id="pez2">
+      <div class="exam-laudo">
+        <div class="exam-laudo-title">Instituto Jô Clemente — 02/04/2026 (23 dias de vida)</div>
+        <div class="exam-laudo-text">
+          <span class="ealert">⚠️ Triagem Metabólica (NEOTANDEM) — Alterados:</span><br>
+          • <strong>C16 = 0,504 µmol/L</strong> (ref 0,962–10,360) — abaixo<br>
+          • <strong>C0/(C16+C18) = 33,712</strong> (ref 1,600–31,067) — acima<br>
+          • <strong>C2 = 5,676 µmol/L</strong> (ref 6,740–64,527) — abaixo<br>
+          • <strong>C14 = 0,054 µmol/L</strong> (ref 0,066–0,534) — abaixo<br><br>
+          <span class="eok">✓ Perfil de Acilcarnitinas (Hermes Pardini/DLE):</span> Acidemias orgânicas — Sem alteração. Distúrbios de oxidação de ácidos graxos — Sem alteração.<br>
+          <span class="eok">✓ Homocisteína:</span> 6,37 µmol/L — Normal (ref feminino: 4,44–13,56).
+        </div>
+        <div class="exam-context">
+          💡 <strong>Contexto:</strong> Os analitos C16, C2 e C14 abaixo do limite inferior e a razão C0/(C16+C18) elevada podem sugerir padrão de Deficiência Primária de Carnitina (CUD) ou variação transitória relacionada à nutrição e imaturidade metabólica. O perfil completo de acilcarnitinas (confirmação) veio <strong>sem alteração</strong> — resultado tranquilizador. Investigação em andamento com a pediatra.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SANGUE CONFIRMAÇÃO 1 — HERMES PARDINI 1010028 -->
+  <div class="exam-cat">
+    <div class="exam-hdr" onclick="tog('sang1')">
+      <span class="exam-ico">🧪</span>
+      <span class="exam-nm">Exame de Sangue — Confirmação 1</span>
+      <span class="exam-ok-badge">✓ Sem alteração</span>
+      <span class="exam-chev" id="c-sang1">▼</span>
+    </div>
+    <div class="exam-bd" id="sang1">
+      <div class="exam-laudo">
+        <div class="exam-laudo-title">Hermes Pardini — Pedido 1010028 — 14/04/2026 (35 dias de vida)</div>
+        <div class="exam-laudo-text">
+          <span class="eok">✓ Homocisteína:</span> 6,37 µmol/L — Normal (ref feminino: 4,44–13,56 µmol/L).<br>
+          <span class="eok">✓ Perfil Qualitativo de Acilcarnitinas Neonatal:</span><br>
+          &nbsp;&nbsp;— Pesquisa de Acidemias Orgânicas: <strong>Perfil sem alteração</strong><br>
+          &nbsp;&nbsp;— Distúrbios da Oxidação dos Ácidos Graxos: <strong>Perfil sem alteração</strong>
+        </div>
+        <div class="exam-context">
+          💡 Este exame foi solicitado como confirmação dos achados do pezinho. O resultado normal aqui é muito positivo — os principais distúrbios metabólicos investigados foram descartados.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SANGUE CONFIRMAÇÃO 2 — HERMES PARDINI 1010030 -->
+  <div class="exam-cat">
+    <div class="exam-hdr" onclick="tog('sang2')">
+      <span class="exam-ico">🧪</span>
+      <span class="exam-nm">Exame de Sangue — Confirmação 2</span>
+      <span class="exam-warn-badge">⚡ Ver detalhes</span>
+      <span class="exam-chev" id="c-sang2">▼</span>
+    </div>
+    <div class="exam-bd" id="sang2">
+      <div class="exam-laudo">
+        <div class="exam-laudo-title">Hermes Pardini — Pedido 1010030 — 14/04/2026 (35 dias de vida) · Dra. Thais Arbocese Zanolla</div>
+        <div class="exam-laudo-text">
+          <span class="eok">✓ Homocisteína:</span> 6,19 µmol/L — Normal (ref feminino: 4,44–13,56).<br>
+          <span class="eok">✓ Glicose (jejum):</span> 74 mg/dL — Normal (ref 60–99).<br>
+          <span class="eok">✓ Ureia:</span> 8,8 mg/dL — Normal para recém-nascido (ref 8,4–25,8).<br>
+          <span class="eok">✓ Colesterol Total:</span> 175 mg/dL (para crianças ref &lt;170 — levemente acima, sem relevância clínica isolada em lactente).<br>
+          &nbsp;&nbsp;&nbsp;HDL 57 · LDL 93 · VLDL 25 · Não-HDL 118.<br>
+          <span class="eok">✓ Sódio:</span> 136 mEq/L — Normal (ref 136–145).<br>
+          <span class="ewarn">⚡ Potássio:</span> 5,6 mEq/L — levemente acima (ref 3,5–5,1). Pode ser hemólise na coleta ou variação fisiológica em lactente.<br>
+          <span class="eok">✓ Cloretos:</span> 106 mEq/L — Normal (ref 98–112).<br>
+          <span class="ealert">⚠️ Ácido Lático (Lactato):</span> <strong>30,4 mg/dL</strong> — acima do normal (ref 4,5–19,8). Pode indicar hipóxia transitória, esforço na coleta ou alteração metabólica.<br>
+          <span class="eok">✓ TSH Ultra Sensível:</span> 1,23 microUI/mL — Normal para 1–23 meses (ref 0,62–7,55).<br>
+          <span class="eok">✓ T4 Livre:</span> 1,16 ng/dL — Normal para 1–23 meses (ref 0,86–1,32). Tireoide funcionando bem.
+        </div>
+        <div class="exam-context">
+          💡 <strong>Lactato elevado:</strong> O ácido lático acima do normal (30,4 vs ref máx 19,8) pode ocorrer por choro ou agitação durante a coleta, compressão do braço, ou ser sinal de investigação metabólica em andamento. A pediatra está ciente e avaliando em conjunto com os demais resultados. TSH e T4 Livre normais descartam hipotireoidismo — boa notícia!
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <p class="footer">Central da Catarina Almeida Brito 🌸<br>Nascida em 10 de março de 2026 · Desenvolvido Pelo Papai 💕</p>
