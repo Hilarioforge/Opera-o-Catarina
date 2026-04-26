@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Catarina">
-<meta name="theme-color" content="#fce7f3">
+<meta name="theme-color" content="var(--pink-light)">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -91,7 +91,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .footer-note{text-align:center;font-size:11px;color:var(--muted);padding:8px 16px 4px;line-height:1.6;}
 
 /* BOTTOM NAV */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #fad4e8;display:flex;padding:8px 0 env(safe-area-inset-bottom,8px);z-index:100;}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);display:flex;padding:8px 0 env(safe-area-inset-bottom,8px);z-index:100;}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;font-weight:600;color:#b07090;text-decoration:none;padding:4px 0;}
 .nav-item.active{color:#3b5bdb;}
 .nav-item span:first-child{font-size:22px;}
@@ -107,6 +107,7 @@ body.dark input, body.dark select, body.dark textarea {
 }
 body.dark .bottom-nav { background: var(--surface) !important; border-color: var(--border) !important; }
 </style>
+<script src="theme.js"></script>
 </head>
 <body>
 

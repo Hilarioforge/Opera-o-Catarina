@@ -46,31 +46,26 @@ function applyTheme(prefs) {
   const root = document.documentElement;
 
   // Cor de destaque
-  root.style.setProperty('--pink',      palette.accent);
-  root.style.setProperty('--pink-mid',  palette.mid);
-  root.style.setProperty('--pink-light',palette.light);
-  root.style.setProperty('--border',    palette.border);
-  root.style.setProperty('--muted',     palette.muted);
+  root.style.setProperty('--pink',        palette.accent);
+  root.style.setProperty('--pink-mid',    palette.mid);
+  root.style.setProperty('--pink-light',  palette.light);
+  root.style.setProperty('--pink-shadow', hexToRgba(palette.accent, 0.28));
+  root.style.setProperty('--border',      dark ? DARK_OVERRIDES.border : palette.border);
+  root.style.setProperty('--muted',       dark ? DARK_OVERRIDES.muted  : palette.muted);
 
   if (dark) {
-    // Dark mode
     root.style.setProperty('--bg',       DARK_OVERRIDES.bg);
     root.style.setProperty('--surface',  DARK_OVERRIDES.surface);
     root.style.setProperty('--surface2', DARK_OVERRIDES.surface2);
-    root.style.setProperty('--border',   DARK_OVERRIDES.border);
     root.style.setProperty('--text',     DARK_OVERRIDES.text);
-    root.style.setProperty('--muted',    DARK_OVERRIDES.muted);
     document.body.classList.add('dark');
-    // Nav e bottom-nav
     document.querySelectorAll('.bottom-nav').forEach(el => {
       el.style.background = DARK_OVERRIDES.navBg;
       el.style.borderColor = DARK_OVERRIDES.navBorder;
     });
-    // Meta theme-color
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute('content', DARK_OVERRIDES.bg);
   } else {
-    // Light mode
     root.style.setProperty('--bg',       palette.bg);
     root.style.setProperty('--surface',  '#ffffff');
     root.style.setProperty('--surface2', palette.surface2);
@@ -85,19 +80,30 @@ function applyTheme(prefs) {
   }
 }
 
-// Aplica assim que o script carrega (antes do paint)
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+// Aplica imediatamente antes do paint para evitar flash de cor
 (function() {
   const prefs = getPrefs();
-  // Aplica vars básicas antes do DOM estar pronto para evitar flash
   const dark = prefs.dark || false;
   const color = prefs.color || 'rosa';
   const palette = ACCENT_PALETTES[color] || ACCENT_PALETTES.rosa;
   const root = document.documentElement;
-  root.style.setProperty('--pink', palette.accent);
-  root.style.setProperty('--pink-mid', palette.mid);
-  root.style.setProperty('--pink-light', palette.light);
-  root.style.setProperty('--border', dark ? DARK_OVERRIDES.border : palette.border);
-  root.style.setProperty('--muted', dark ? DARK_OVERRIDES.muted : palette.muted);
+  const toRgba = (hex, a) => {
+    const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${a})`;
+  };
+  root.style.setProperty('--pink',        palette.accent);
+  root.style.setProperty('--pink-mid',    palette.mid);
+  root.style.setProperty('--pink-light',  palette.light);
+  root.style.setProperty('--pink-shadow', toRgba(palette.accent, 0.28));
+  root.style.setProperty('--border',  dark ? DARK_OVERRIDES.border  : palette.border);
+  root.style.setProperty('--muted',   dark ? DARK_OVERRIDES.muted   : palette.muted);
   root.style.setProperty('--bg',      dark ? DARK_OVERRIDES.bg      : palette.bg);
   root.style.setProperty('--surface', dark ? DARK_OVERRIDES.surface : '#ffffff');
   root.style.setProperty('--surface2',dark ? DARK_OVERRIDES.surface2 : palette.surface2);
