@@ -115,7 +115,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 /* EMPTY */
 .empty-state{text-align:center;padding:30px 20px;color:var(--muted);font-size:13px;}
+
+/* DARK MODE EXTRAS */
+body.dark input, body.dark select, body.dark textarea {
+  background: var(--surface2) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+body.dark .bottom-nav { background: var(--surface) !important; border-color: var(--border) !important; }
 </style>
+<script src="theme.js"></script>
 </head>
 <body>
 
@@ -200,6 +209,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <a href="sono.html" class="nav-item active">
     <span>💤</span>
     <span>Sono</span>
+  </a>
+  <a href="config.html" class="nav-item">
+    <span>⚙️</span>
+    <span>Config</span>
   </a>
 </div>
 

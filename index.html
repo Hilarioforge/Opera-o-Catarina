@@ -130,7 +130,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .timeline-desc{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5;}
 
 .timeline-del{float:right;background:none;border:none;font-size:13px;color:var(--muted);cursor:pointer;padding:0 0 4px 8px;}
+
+/* DARK MODE EXTRAS */
+body.dark input, body.dark select, body.dark textarea {
+  background: var(--surface2) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+body.dark .bottom-nav { background: var(--surface) !important; border-color: var(--border) !important; }
 </style>
+<script src="theme.js"></script>
 </head>
 <body>
 
@@ -313,6 +322,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <a href="sono.html" class="nav-item">
     <span>💤</span>
     <span>Sono</span>
+  </a>
+  <a href="config.html" class="nav-item">
+    <span>⚙️</span>
+    <span>Config</span>
   </a>
 </div>
 

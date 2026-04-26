@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Catarina">
+<meta name="theme-color" content="#fce7f3">
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="theme.js"></script>
+<title>Configurações — Catarina 🌸</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:90px;transition:background .3s,color .3s;}
+
+.hero{background:linear-gradient(160deg,var(--surface2) 0%,var(--bg) 100%);padding:28px 20px 22px;text-align:center;border-bottom:1px solid var(--border);}
+.hero-emoji{font-size:40px;display:block;margin-bottom:8px;}
+.hero-title{font-family:'Playfair Display',serif;font-size:26px;color:var(--text);}
+
+.content{padding:16px;}
+.section-title{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;margin-top:20px;}
+.section-title:first-child{margin-top:0;}
+
+/* CARDS */
+.pref-card{background:var(--surface);border:1.5px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:10px;}
+.pref-row{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-top:1px solid var(--border);}
+.pref-row:first-child{border-top:none;}
+.pref-left{display:flex;align-items:center;gap:12px;}
+.pref-icon{font-size:22px;}
+.pref-label{font-size:14px;font-weight:600;color:var(--text);}
+.pref-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+
+/* TOGGLE */
+.toggle{position:relative;width:52px;height:28px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;background:#d1d5db;border-radius:14px;cursor:pointer;transition:background .25s;}
+.toggle-slider::before{content:'';position:absolute;left:3px;top:3px;width:22px;height:22px;background:#fff;border-radius:50%;transition:transform .25s;box-shadow:0 1px 4px rgba(0,0,0,.15);}
+.toggle input:checked + .toggle-slider{background:var(--pink);}
+.toggle input:checked + .toggle-slider::before{transform:translateX(24px);}
+
+/* PALETA DE CORES */
+.color-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:16px 18px;}
+.color-btn{display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;cursor:pointer;padding:0;}
+.color-circle{width:44px;height:44px;border-radius:50%;border:3px solid transparent;transition:transform .15s,border-color .15s;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.color-circle.active{border-color:var(--text);transform:scale(1.15);}
+.color-name{font-size:10px;color:var(--muted);font-weight:600;}
+
+/* PREVIEW */
+.preview-card{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;}
+.preview-dot{width:40px;height:40px;border-radius:50%;background:var(--pink);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;}
+.preview-label{font-size:13px;font-weight:600;color:var(--text);}
+.preview-sub{font-size:12px;color:var(--muted);}
+.btn-pink{width:100%;padding:14px;background:var(--pink);color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:6px;}
+
+/* INFO */
+.info-card{background:var(--surface2);border:1.5px solid var(--border);border-radius:14px;padding:14px 16px;font-size:13px;color:var(--text);line-height:1.6;}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);display:flex;padding:8px 0 env(safe-area-inset-bottom,8px);z-index:100;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;font-weight:600;color:var(--muted);text-decoration:none;padding:4px 0;}
+.nav-item.active{color:var(--pink);}
+.nav-item span:first-child{font-size:22px;}
+
+/* DARK EXTRAS */
+body.dark .pref-card{border-color:var(--border);}
+body.dark input[type=text],body.dark input[type=date],body.dark input[type=time],body.dark select,body.dark textarea{background:var(--surface2);color:var(--text);border-color:var(--border);}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <span class="hero-emoji">⚙️</span>
+  <div class="hero-title">Configurações</div>
+</div>
+
+<div class="content">
+
+  <!-- APARÊNCIA -->
+  <div class="section-title">Aparência</div>
+
+  <div class="pref-card">
+    <!-- DARK MODE -->
+    <div class="pref-row">
+      <div class="pref-left">
+        <div class="pref-icon">🌙</div>
+        <div>
+          <div class="pref-label">Modo escuro</div>
+          <div class="pref-sub">Ideal para uso à noite</div>
+        </div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="toggle-dark" onchange="onDarkToggle(this)">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <!-- COR DO TEMA -->
+    <div class="pref-row" style="flex-direction:column;align-items:flex-start;gap:12px;">
+      <div class="pref-left">
+        <div class="pref-icon">🎨</div>
+        <div>
+          <div class="pref-label">Cor do app</div>
+          <div class="pref-sub">Escolha a cor de destaque</div>
+        </div>
+      </div>
+      <div class="color-grid" style="padding:0;width:100%;">
+        <button class="color-btn" onclick="selectColor('rosa')">
+          <div class="color-circle" id="cc-rosa" style="background:#ec4899;">🌸</div>
+          <div class="color-name">Rosa</div>
+        </button>
+        <button class="color-btn" onclick="selectColor('lilas')">
+          <div class="color-circle" id="cc-lilas" style="background:#a855f7;">💜</div>
+          <div class="color-name">Lilás</div>
+        </button>
+        <button class="color-btn" onclick="selectColor('azul')">
+          <div class="color-circle" id="cc-azul" style="background:#3b82f6;">💙</div>
+          <div class="color-name">Azul</div>
+        </button>
+        <button class="color-btn" onclick="selectColor('verde')">
+          <div class="color-circle" id="cc-verde" style="background:#10b981;">🍃</div>
+          <div class="color-name">Verde</div>
+        </button>
+        <button class="color-btn" onclick="selectColor('pessego')">
+          <div class="color-circle" id="cc-pessego" style="background:#f97316;">🍑</div>
+          <div class="color-name">Pêssego</div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="section-title">Prévia</div>
+  <div class="preview-card">
+    <div class="preview-dot">🌸</div>
+    <div>
+      <div class="preview-label">Catarina Almeida Brito</div>
+      <div class="preview-sub">Nascida em 10/03/2026 · São Paulo, SP</div>
+    </div>
+  </div>
+
+  <!-- INFO -->
+  <div class="section-title">Sobre</div>
+  <div class="info-card">
+    💡 As preferências são salvas no seu dispositivo e aplicadas automaticamente em todas as telas do app.
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <a href="index.html" class="nav-item">
+    <span>🌸</span>
+    <span>Início</span>
+  </a>
+  <a href="rotina.html" class="nav-item">
+    <span>🍼</span>
+    <span>Rotina</span>
+  </a>
+  <a href="necessidades.html" class="nav-item">
+    <span>🛒</span>
+    <span>Lista</span>
+  </a>
+  <a href="sono.html" class="nav-item">
+    <span>💤</span>
+    <span>Sono</span>
+  </a>
+  <a href="config.html" class="nav-item active">
+    <span>⚙️</span>
+    <span>Config</span>
+  </a>
+</div>
+
+<script>
+function getPrefs(){ try{ return JSON.parse(localStorage.getItem('catarina_prefs')||'{}'); }catch{return{};} }
+function savePrefs(p){ localStorage.setItem('catarina_prefs', JSON.stringify(p)); }
+
+function init() {
+  const prefs = getPrefs();
+  document.getElementById('toggle-dark').checked = !!prefs.dark;
+  markColor(prefs.color || 'rosa');
+  if(window.CatTheme) window.CatTheme.applyTheme(prefs);
+}
+
+function onDarkToggle(cb) {
+  const prefs = getPrefs();
+  prefs.dark = cb.checked;
+  savePrefs(prefs);
+  if(window.CatTheme) window.CatTheme.applyTheme(prefs);
+}
+
+function selectColor(color) {
+  const prefs = getPrefs();
+  prefs.color = color;
+  savePrefs(prefs);
+  markColor(color);
+  if(window.CatTheme) window.CatTheme.applyTheme(prefs);
+}
+
+function markColor(color) {
+  ['rosa','lilas','azul','verde','pessego'].forEach(c => {
+    const el = document.getElementById('cc-' + c);
+    if(el) el.classList.toggle('active', c === color);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
