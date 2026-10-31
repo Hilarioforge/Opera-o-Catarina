@@ -497,5 +497,6 @@ onSnapshot(query(collection(db, 'necessidades'), orderBy('ts', 'desc')), snap =>
   renderLists(allItems);
 });
 </script>
+<script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').then(r => r.update()).catch(console.error)); }</script>
 </body>
 </html>

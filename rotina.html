@@ -268,7 +268,7 @@ body.dark input, body.dark select, body.dark textarea {
 }
 body.dark .bottom-nav { background: var(--surface) !important; border-color: var(--border) !important; }
 </style>
-<script src="theme.js"></script>
+
 </head>
 <body>
 
@@ -364,6 +364,7 @@ body.dark .bottom-nav { background: var(--surface) !important; border-color: var
     </div>
   </div>
 
+  <div class="section-title">🍽️ Refeição</div><div class="fralda-card"><button class="btn-start" id="btn-refeicao" onclick="registrarRefeicao()">🍽️ Registrar refeição agora</button><div class="status-card" id="meal-status"><div class="status-title">🍽️ Refeições</div><div class="status-desc" data-meal-last>Nenhuma refeição registrada ainda</div><div class="status-desc" data-meal-count>0 refeições hoje</div><p class="status-desc" data-meal-guidance></p><a href="https://www.who.int/news-room/fact-sheets/detail/infant-and-young-child-feeding" target="_blank" rel="noopener" style="color:var(--pink);font-size:12px">Fonte: OMS — alimentação infantil</a></div></div>
   <!-- FRALDA -->
   <div class="section-title">🩲 Troca de Fralda</div>
   <div class="fralda-card">
@@ -434,6 +435,7 @@ body.dark .bottom-nav { background: var(--surface) !important; border-color: var
 
   <div class="filter-bar">
     <button class="filter-btn active" onclick="setFilter('todos')" id="filter-todos">Todos</button>
+    <button class="filter-btn" onclick="setFilter('refeicao')" id="filter-refeicao">🍽️ Refeições</button>
     <button class="filter-btn" onclick="setFilter('mama')" id="filter-mama">🍼 Mamadas</button>
     <button class="filter-btn" onclick="setFilter('sono')" id="filter-sono">😴 Sonecas</button>
     <button class="filter-btn" onclick="setFilter('fralda')" id="filter-fralda">🩲 Fraldas</button>
@@ -647,6 +649,7 @@ body.dark .bottom-nav { background: var(--surface) !important; border-color: var
   </a>
 </div>
 
+<script src="feeding.js?v=2"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
 import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp, where, Timestamp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
@@ -1067,6 +1070,19 @@ window.stopTimer = async function(type) {
 // ==================
 // FRALDA
 // ==================
+window.registrarRefeicao = async function() {
+ const btn = document.getElementById('btn-refeicao');
+ if (btn.disabled) return;
+ btn.disabled = true;
+ const now = new Date();
+ try {
+  const data = {tipo:'refeicao',dateKey:localDateKey(now),timeStr:now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),endTs:Math.floor(now.getTime()/1000),ts:serverTimestamp()};
+  if (autorAtual) data.autor = autorAtual;
+  await addDoc(collection(db,'rotina'),data);
+  showToast('🍽️ Refeição registrada às ' + data.timeStr);
+ } catch(err) { alert('Erro ao salvar refeição. Tente novamente.'); }
+ finally { btn.disabled = false; }
+};
 window.registrarFralda = async function(tipo) {
   const now = new Date();
   const dateKey = localDateKey(now);
@@ -1092,7 +1108,7 @@ window.openEditModal = function(id) {
   if (!e) return;
   editingEntry = e;
 
-  const tituloMap = { mama: '🍼 Editar Mamada', sono: '😴 Editar Soneca', fralda: '🩲 Editar Fralda' };
+  const tituloMap = { refeicao: '🍽️ Editar Refeição', mama: '🍼 Editar Mamada', sono: '😴 Editar Soneca', fralda: '🩲 Editar Fralda' };
   document.getElementById('edit-modal-titulo').textContent = tituloMap[e.tipo] || '✏️ Editar';
 
   let fields = '';
@@ -1109,7 +1125,7 @@ window.openEditModal = function(id) {
     fields += `<div class="edit-field"><label>Horário de fim</label><input type="time" id="ef-end" value="${endVal}" placeholder="HH:MM"></div>`;
     // Mostra a duração atual como referência (somente leitura)
     const durMin = e.duration ? Math.round(e.duration / 60) : 0;
-    fields += `<div class="edit-field"><label style="color:var(--muted)">Duração atual (será recalculada)</label><input type="text" id="ef-dur-display" value="${durMin} min" disabled style="background:#f5f5f5;color:var(--muted);"></div>`;
+    fields += `<div class="edit-field"><label style="color:var(--muted)">Duração atual (será recalculada)</label><input type="text" id="ef-dur-display" value="${formatElapsedMinutes(durMin)}" disabled style="background:#f5f5f5;color:var(--muted);"></div>`;
   } else {
     // Fralda — só tem horário de registro
     fields += `<div class="edit-field"><label>Horário</label><input type="time" id="ef-end" value="${e.timeStr||''}"></div>`;
@@ -1146,7 +1162,7 @@ window.openEditModal = function(id) {
       let diffMin = (eh * 60 + em) - (sh * 60 + sm);
       if (diffMin < 0) diffMin += 24 * 60; // passou da meia-noite
       const display = document.getElementById('ef-dur-display');
-      if (display) display.value = diffMin + ' min';
+      if (display) display.value = formatElapsedMinutes(diffMin);
     };
     setTimeout(() => {
       document.getElementById('ef-start')?.addEventListener('change', updateDurDisplay);
@@ -1206,6 +1222,12 @@ window.saveEditModal = async function() {
     updates.peito = peito || null;
   }
 
+  if (e.tipo === 'refeicao') {
+    const date = new Date(dateKey + 'T' + endVal + ':00');
+    if (!Number.isFinite(date.getTime())) { alert('Informe data e horário válidos.'); return; }
+    updates.endTs = Math.floor(date.getTime()/1000);
+    updates.ts = Timestamp.fromDate(date);
+  }
   if (e.tipo === 'fralda') {
     updates.subTipo = document.getElementById('ef-subtipo')?.value || e.subTipo;
   }
@@ -1263,6 +1285,7 @@ window.setFilter = function(f) {
 // RENDER HELPERS
 // ==================
 function entryIcon(e) {
+  if (e.tipo === 'refeicao') return '🍽️';
   if (e.tipo === 'mama') return '🍼';
   if (e.tipo === 'sono') return e.periodo === 'noite' ? '🌙' : '🌤️';
   if (e.tipo === 'fralda') {
@@ -1272,6 +1295,7 @@ function entryIcon(e) {
 }
 
 function entryMain(e) {
+  if (e.tipo === 'refeicao') return 'Refeição';
   if (e.tipo === 'mama') {
     const peitoStr = e.peito ? ` · Peito ${e.peito}` : '';
     return `Mamada — ${formatDurationLabel(e.duration || 0)}${peitoStr}`;
@@ -1298,6 +1322,7 @@ function entryBadgeClass(tipo) {
 // TODAY
 // ==================
 function renderToday(entries) {
+  renderMealStatus(entries, "meal-status");
   const todayKey = localDateKey();
   const todayEntries = entries.filter(e => e.dateKey === todayKey);
 
@@ -1314,9 +1339,9 @@ function renderToday(entries) {
   document.getElementById('fralda-count-today').textContent = fraldas.length + (fraldas.length === 1 ? ' troca' : ' trocas');
 
   const mamaMin = Math.round(mamaTotalSec / 60);
-  document.getElementById('stat-mama-time').textContent = mamaMin >= 60 ? `${Math.floor(mamaMin/60)}h${mamaMin%60}min` : `${mamaMin}min`;
+  document.getElementById('stat-mama-time').textContent = formatElapsedMinutes(mamaMin);
   const sonoH = sonoTotalSec / 3600;
-  document.getElementById('stat-sono-time').textContent = sonoH >= 1 ? `${sonoH.toFixed(1)}h` : `${Math.round(sonoTotalSec/60)}min`;
+  document.getElementById('stat-sono-time').textContent = formatElapsedMinutes(sonoTotalSec / 60);
 
   // list
   const el = document.getElementById('today-list');
@@ -1678,6 +1703,8 @@ onSnapshot(query(collection(db, 'rotina'), orderBy('ts', 'desc')), snap => {
   checkLembretes(allEntries);
 });
 
+setInterval(() => renderMealStatus(allEntries, "meal-status"), 60000);
 </script>
+<script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').then(r => r.update()).catch(console.error)); }</script>
 </body>
 </html>

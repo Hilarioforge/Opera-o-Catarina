@@ -107,7 +107,7 @@ body.dark input, body.dark select, body.dark textarea {
 }
 body.dark .bottom-nav { background: var(--surface) !important; border-color: var(--border) !important; }
 </style>
-<script src="theme.js"></script>
+
 </head>
 <body>
 
@@ -133,6 +133,7 @@ body.dark .bottom-nav { background: var(--surface) !important; border-color: var
   <div class="section-title" style="margin-top:18px;">Status agora</div>
   <div id="status-sono"></div>
   <div id="status-mama"></div>
+<div class="status-card" id="meal-status"><div class="status-title">🍽️ Refeições</div><div class="status-desc" data-meal-last>Nenhuma refeição registrada ainda</div><div class="status-desc" data-meal-count>0 refeições hoje</div><p class="status-desc" data-meal-guidance></p><a href="https://www.who.int/news-room/fact-sheets/detail/infant-and-young-child-feeding" target="_blank" rel="noopener" style="color:var(--pink);font-size:12px">Fonte: OMS — alimentação infantil</a></div>
 
   <!-- RESUMO HOJE -->
   <div class="section-title" style="margin-top:18px;">Resumo de hoje</div>
@@ -199,6 +200,7 @@ body.dark .bottom-nav { background: var(--surface) !important; border-color: var
   </a>
 </div>
 
+<script src="feeding.js?v=2"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
 import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
@@ -307,20 +309,9 @@ function getFaixa(dias) {
   return FAIXAS.find(f => dias >= f.min && dias < f.max) || FAIXAS[FAIXAS.length - 1];
 }
 
-function formatMinutes(min) {
-  if (min < 60) return `${Math.round(min)}min`;
-  const h = Math.floor(min / 60);
-  const m = Math.round(min % 60);
-  return m > 0 ? `${h}h ${m}min` : `${h}h`;
-}
+function formatMinutes(min) { return formatElapsedMinutes(min); }
 
-function formatHours(sec) {
-  const totalMin = sec / 60;
-  const h = Math.floor(totalMin / 60);
-  const m = Math.round(totalMin % 60);
-  if (h === 0) return `${m}min`;
-  return m > 0 ? `${h}h ${m}min` : `${h}h`;
-}
+function formatHours(sec) { return formatElapsedMinutes(sec / 60); }
 
 // ==================
 // RENDERIZA STATUS CARD
@@ -419,6 +410,7 @@ function renderRec(faixa) {
 // MAIN RENDER
 // ==================
 function render(entries) {
+  renderMealStatus(entries, "meal-status");
   const dias = getDiasDeVida();
   const faixa = getFaixa(dias);
   const now = Date.now();
@@ -529,5 +521,6 @@ onSnapshot(query(collection(db, 'rotina'), orderBy('ts', 'desc')), snap => {
 setInterval(() => render(allEntries), 60000);
 
 </script>
+<script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').then(r => r.update()).catch(console.error)); }</script>
 </body>
 </html>

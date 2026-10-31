@@ -207,5 +207,6 @@ function markColor(color) {
 
 document.addEventListener('DOMContentLoaded', init);
 </script>
+<script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').then(r => r.update()).catch(console.error)); }</script>
 </body>
 </html>
